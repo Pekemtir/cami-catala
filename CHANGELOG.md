@@ -1,5 +1,8 @@
 # Changelog · Camí Català
 
+## v11 (2026-11-07)
+- **Menos castellano progresivo en A2, como en euskera** (sin ocultar nada, todo se ve al tocar): A1 y A2 lliçons 1–7 con traducciones visibles; desde la lliçó 8 de A2 los ejemplos y las paraules clau salen borrosos; desde la 16 también el subtítulo en castellano de la lliçó (cabecera, lista e Inici) y, en Inici, la traducción de la paraula del dia. Se puede desactivar en Jo → Ajustos.
+
 ## v10 (2026-11-07)
 - **A2 bloqueado**: las lliçons d'A2 (y el test de nivel A2) se abren al acabar las 26 lliçons de l'A1, al aprobar el test de nivel A1 o con el código de acceso.
 - **Test de nivel**: 40 preguntas, hace falta un 90 % de aciertos (36/40; se quita el mínimo por bloque) y solo se puede hacer un test cada 24 horas (aprobado o no). El código de acceso quita la espera.

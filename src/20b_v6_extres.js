@@ -46,4 +46,7 @@ ACT.genq=()=>{const qs=[];let t=0;while(qs.length<10&&t++<80){const q=genQ();if(
 /* A2: traducciones difuminadas hasta tocarlas */
 ACT.unblur=(v,el)=>el.classList.add('on');
 ACT.blur=()=>{S.set.blur=S.set.blur===false;save();showCur()};
-const blr=l=>l.lv==='a2'&&S.set.blur!==false;
+/* escalera de castellano (como euskera): A1 y A2 1-7 visible; A2 8+ ejemplos y palabras clave borrosos; A2 16+ también los subtítulos */
+const blr=l=>l.lv==='a2'&&l.n>=8&&S.set.blur!==false;
+const blrSub=l=>l.lv==='a2'&&l.n>=16&&S.set.blur!==false;
+const esSub=(l,tap)=>blrSub(l)?'<span class="blur"'+(tap?' data-a="unblur" role="button" title="Toca para ver la traducción"':'')+'>'+esc(l.es)+'</span>':esc(l.es);
