@@ -30,7 +30,7 @@ function sheet(ok,q,note,given){const old=$('#sheet');if(old)old.remove();const 
   const ex=q.e||q.tip;if(ex&&!SE.o.test)h+='<p>'+(q.e?esc(q.e):esc(q.tip))+'</p>';
   h+='<button class="btn block" data-a="next" id="nx">Continua</button></div>';d.innerHTML=h;document.body.appendChild(d);
   const nx=$('#nx');if(nx)nx.focus()}
-function record(ok,q){SE.tot++;S.stat.tot++;
+function record(ok,q){SE.tot++;S.stat.tot++;if(q.key&&q.key.slice(0,2)==='w:')bump(q.key.slice(2),ok);
   if(q.blk!=null){const b=SE.blk[q.blk]||(SE.blk[q.blk]={ok:0,tot:0});b.tot++;if(ok)b.ok++}
   if(ok){SE.ok++;S.stat.ok++;SE.combo++;SE.max=Math.max(SE.max,SE.combo);if(q.verb)S.stat.verb++;const x=SE.o.per!=null?SE.o.per:10;SE.xp+=x+(SE.combo>=5?2:0);
     if(q.key&&S.weak[q.key]){delete S.weak[q.key]}}
@@ -55,8 +55,8 @@ ACT.wt=(v,el)=>{if(SE.locked)return;SE.line.push(+v);el.classList.add('gone');re
 function redrawLine(){const q=SE.cur,all=q.tok.concat(q.extra||[]);$('#ln').innerHTML=SE.line.map((i,n)=>'<button class="wt" data-a="wl" data-v="'+n+'">'+esc(all[i])+'</button>').join('');$('#ck').disabled=!SE.line.length}
 ACT.wl=(v)=>{if(SE.locked)return;const idx=SE.line.splice(+v,1)[0];const b=document.querySelector('#bk .wt[data-v="'+idx+'"]');if(b)b.classList.remove('gone');redrawLine()};
 ACT.flip=()=>{const b=$('#bk');if(!b)return;b.hidden=false;$('#fbb').hidden=false;$('#fh').hidden=true};
-ACT.fyes=()=>{const q=SE.cur;SE.tot++;SE.ok++;if(q.key&&S.weak[q.key])delete S.weak[q.key];SE.xp+=SE.o.per!=null?SE.o.per:3;SE.i++;save();showQ()};
-ACT.fno=()=>{const q=SE.cur;SE.tot++;if(q.key)S.weak[q.key]=(S.weak[q.key]||0)+1;if(!q._r&&SE.qs.length<40)SE.qs.push(Object.assign({},q,{_r:1}));SE.i++;save();showQ()};
+ACT.fyes=()=>{const q=SE.cur;if(q.key&&q.key.slice(0,2)==='w:')bump(q.key.slice(2),true);SE.tot++;SE.ok++;if(q.key&&S.weak[q.key])delete S.weak[q.key];SE.xp+=SE.o.per!=null?SE.o.per:3;SE.i++;save();showQ()};
+ACT.fno=()=>{const q=SE.cur;if(q.key&&q.key.slice(0,2)==='w:')bump(q.key.slice(2),false);SE.tot++;if(q.key)S.weak[q.key]=(S.weak[q.key]||0)+1;if(!q._r&&SE.qs.length<40)SE.qs.push(Object.assign({},q,{_r:1}));SE.i++;save();showQ()};
 ACT.next=()=>{const s=$('#sheet');if(s)s.remove();SE.i++;showQ()};
 ACT.quit=()=>{const s=$('#sheet');if(s)s.remove();leaveSession();showCur()};
 function leaveSession(){document.body.classList.remove('in-session');try{speechSynthesis.cancel()}catch(e){}}

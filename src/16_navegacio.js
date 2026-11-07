@@ -19,7 +19,7 @@ const nextLesson=()=>LESSONS.find(l=>!S.done[l.id]);
 function ring(p){const r=34,c=2*Math.PI*r;return'<svg class="ring" viewBox="0 0 80 80" role="img" aria-label="Objectiu diari"><circle class="bg" cx="40" cy="40" r="'+r+'"/><circle class="fg" cx="40" cy="40" r="'+r+'" stroke-dasharray="'+c+'" stroke-dashoffset="'+(c*(1-Math.min(1,p)))+'" transform="rotate(-90 40 40)"/><text x="40" y="47" text-anchor="middle">'+Math.round(Math.min(1,p)*100)+'%</text></svg>'}
 function wotd(){const d=Math.floor(Date.now()/864e5);return WORDS[d%WORDS.length]}
 V.home=()=>{const nl=nextLesson();const w=wotd();const wk=Object.keys(S.weak).length;
-  let h='<h1>Bon dia!</h1><p class="muted">Curs de català A1 + A2</p>';
+  let h=(!CAV&&S.set.voice&&!S.seen.voice?'<div class="card ch"><b>🔊 Veu catalana</b><p class="muted" style="margin:6px 0">No hem detectat cap veu catalana al dispositiu. Instal·la-la perquè el català soni bé (instruccions a Jo → Ajustos).</p><button class="btn sm sec" data-a="voicehide">Entesos</button></div>':'')+'<h1>Bon dia!</h1><p class="muted">Curs de català A1 + A2</p>';
   h+='<div class="card goal">'+ring(dayXP()/S.goal)+'<div class="grow"><b style="font:400 24px var(--f-d)">Objectiu d\'avui</b><div class="muted">'+dayXP()+' / '+S.goal+' XP · ratxa '+streakNow()+' '+(streakNow()===1?'dia':'dies')+'</div></div></div>';
   if(nl)h+='<button class="lrow" data-a="lesson" data-v="'+nl.id+'" style="border-color:var(--yel)"><span class="ic">'+nl.ic+'</span><span class="grow"><small>Continua · '+nl.lv.toUpperCase()+' lliçó '+nl.n+'</small><b>'+esc(nl.ca)+'</b><small>'+esc(nl.es)+'</small></span><span>▶</span></button>';
   else h+='<div class="card">🎉 Has completat tot el curs. Segueix repassant!</div>';
@@ -61,14 +61,30 @@ ACT.daily=()=>{const first=!S.seen['dc'+today()];startSession(mixQ(10),{per:8,bo
 ACT.sentq=()=>startSession(Array.from({length:10},()=>sentQ(rnd(3)?null:'a1')),{per:8});
 ACT.numq=()=>startSession(Array.from({length:10},()=>numQ(rnd(3)?100:1000)),{per:8});
 ACT.spellq=()=>startSession(Array.from({length:8},spellQ),{per:10});
-ACT.listenq=()=>startSession(pick(seenPool(),10).map(w=>vq(w,'l')),{per:6});
+ACT.listenq=()=>startSession(pickWords(seenPool(),10).map(w=>vq(w,'l')),{per:6});
 ACT.themes=()=>go('themes',null,true);ACT.games=()=>go('games',null,true);ACT.tests=()=>go('tests',null,true);ACT.self=()=>go('self',null,true);ACT.vquiz=()=>go('vquiz',null,true);
-V.themes=()=>{const lv=CUR.a||'a1';return'<h1>Vocabulari</h1><div class="pills"><button class="pill '+(lv==='a1'?'on':'')+'" data-a="tlv" data-v="a1">A1</button><button class="pill '+(lv==='a2'?'on':'')+'" data-a="tlv" data-v="a2">A2</button></div>'+VOCAB.filter(t=>t.lv===lv).map(t=>{const op=themeOpen(t.id);return '<button class="lrow'+(op?'':' jg-lock')+'" data-a="'+(op?'theme':'glocked')+'" data-need="Acaba la lliçó on es treballa aquest tema" data-v="'+t.id+'"><span class="ic">'+(op?t.ic:'🔒')+'</span><span class="grow"><b>'+esc(t.ca)+'</b><small>'+esc(t.es)+' · '+t.w.length+' paraules</small></span></button>'}).join('')};
+V.themes=()=>{const lv=CUR.a||'a1';const ts=VOCAB.filter(t=>t.lv===lv);
+  const open=ts.filter(t=>themeOpen(t.id));const all=[].concat(...open.map(themeWords));const avg=all.length?Math.round(all.reduce((a,w)=>a+mast(w.ca),0)/(all.length*4)*100):0;
+  return'<h1>Vocabulari</h1><p class="muted">Vocabulario por temas. Cuanto menos domines una palabra, más veces aparece.</p><div class="pills"><button class="pill '+(lv==='a1'?'on':'')+'" data-a="tlv" data-v="a1">A1</button><button class="pill '+(lv==='a2'?'on':'')+'" data-a="tlv" data-v="a2">A2</button></div>'+
+  '<div class="stack" style="margin-top:12px"><input class="fld" id="tsr" type="search" placeholder="🔍 Cerca en català o castellà" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Cerca"><div class="card" id="tsres" hidden></div>'+
+  '<div class="card"><div class="setrow"><span class="ic">📊</span><div class="grow"><b>Domini del nivell '+lv.toUpperCase()+'</b><small class="muted" style="display:block">'+open.length+' de '+ts.length+' temes oberts</small></div><span class="chip">'+avg+'%</span></div><div class="bar"><i style="width:'+avg+'%"></i></div></div>'+
+  '<button class="btn sec block" data-a="opdic">📖 Diccionari de consulta ('+DIC.length+' paraules)</button><button class="btn block" data-a="mixv">Barreja-ho tot · 10 preguntes</button>'+
+  ts.map(t=>{if(!themeOpen(t.id))return'<button class="lrow jg-lock" data-a="glocked" data-need="Acaba la lliçó on es treballa aquest tema" data-v="'+t.id+'"><span class="ic">🔒</span><span class="grow"><b>'+esc(t.ca)+'</b><small>'+esc(t.es)+' · '+t.w.length+' paraules</small></span></button>';
+  const p=setPct(t);const n=themeWords(t).length;return'<div class="card"><div class="setrow"><span class="ic">'+t.ic+'</span><div class="grow"><b>'+esc(t.ca)+'</b><div class="muted">'+esc(t.es)+' · '+n+' paraules</div></div><span class="chip">'+p+'%</span></div><div class="bar"><i style="width:'+p+'%"></i></div>'+
+  '<div class="words">'+t.w.slice(0,6).map(w=>'<span class="w">'+esc(w[0])+'</span>').join('')+(t.w.length>6?'<span class="w">…</span>':'')+'</div>'+
+  '<div class="row" style="margin-top:12px"><button class="btn small" data-a="tquiz" data-v="'+t.id+'">Qüestionari</button><button class="btn sec small" data-a="tflash" data-v="'+t.id+'">Targetes</button><button class="btn sec small" data-a="theme" data-v="'+t.id+'">Llista</button></div></div>'}).join('')+'</div>'};
+function tRes(){const q=norm(($('#tsr')||{value:''}).value);const R=$('#tsres');if(!R)return;if(!q){R.hidden=true;R.innerHTML='';return}
+  const sc=e=>e.n2===q||e.n1===q||e.n3===q?0:(e.n2.startsWith(q)||e.n1.startsWith(q)||e.n3.startsWith(q))?1:(e.n1.includes(q)||e.n3.includes(q))?2:9;
+  const r=DIC.map(e=>[sc(e),e]).filter(x=>x[0]<9).sort((a,b)=>a[0]-b[0]||a[1].ca.length-b[1].ca.length).slice(0,12).map(x=>x[1]);
+  R.hidden=false;R.innerHTML=r.length?r.map(dRow).join(''):'<div class="muted">Cap resultat.</div>'}
+document.addEventListener('input',e=>{if(e.target.id==='tsr')tRes()});
+ACT.opdic=()=>{DT.tab='dic';go('dict')};
+ACT.mixv=()=>{const lv=CUR.a||'a1';const ws=pickWords(seenPool().filter(w=>w.lv===lv),10);if(!ws.length){toast('Acaba alguna lliçó per obrir vocabulari');return}startSession(ws.map(w=>vq(w)),{per:8})};
 ACT.tlv=v=>{CUR.a=v;showCur()};
 ACT.theme=id=>go('theme',id,true);
 V.theme=id=>{const t=THM[id];return'<h1>'+t.ic+' '+esc(t.ca)+'</h1><div class="muted">'+esc(t.es)+' · '+t.w.length+' paraules</div><div class="row" style="margin:12px 0"><button class="btn" data-a="tflash" data-v="'+id+'">🗂️ Targetes</button><button class="btn sec" data-a="tquiz" data-v="'+id+'">❓ Qüestionari</button></div><div class="card">'+t.w.map(w=>'<div class="hit">'+spk(w[0])+'<span style="font-size:22px">'+(w[2]||'')+'</span><b>'+esc(w[0])+'</b><span class="es">'+esc(w[1])+'</span></div>').join('')+'</div>'};
-ACT.tflash=id=>{const ws=pick(THM[id].w,20).map(w=>({k:'flash',kind:'Targetes',ca:w[0],es:w[1],em:w[2],key:'w:'+w[0]}));startSession(ws,{per:3,bonus:10})};
-ACT.tquiz=id=>{const ws=pick(THM[id].w,10).map(w=>WM[w[0]]).filter(Boolean);startSession(ws.map(w=>vq(w)),{per:8})};
+ACT.tflash=id=>{const ws=pickWords(themeWords(THM[id]),20).map(w=>({k:'flash',kind:'Targetes',ca:w.ca,es:w.es,em:w.em,key:'w:'+w.ca}));startSession(ws,{per:3,bonus:10})};
+ACT.tquiz=id=>{const ws=pickWords(themeWords(THM[id]),10);startSession(ws.map(w=>vq(w)),{per:8})};
 /* ----- diccionario y verbos ----- */
 let DT={tab:'dic',vf:'all'};
 V.dict=()=>{let h='<h1>Diccionari</h1><div class="pills"><button class="pill '+(DT.tab==='dic'?'on':'')+'" data-a="dtab" data-v="dic">📖 Paraules ('+DIC.length+')</button><button class="pill '+(DT.tab==='verbs'?'on':'')+'" data-a="dtab" data-v="verbs">🔧 Verbs ('+VLIST.length+')</button></div>';
@@ -99,4 +115,5 @@ let VQ={sel:'all'};
 V.vquiz=()=>'<h1>Quiz de verbs</h1><p class="muted">Completa la forma verbal correcta. Tria el temps.</p><div class="pills"><button class="pill '+(VQ.sel==='all'?'on':'')+'" data-a="vqs" data-v="all">Tots</button>'+TENSES.map(t=>'<button class="pill '+(VQ.sel===t?'on':'')+'" data-a="vqs" data-v="'+t+'">'+VT_NAMES[t][0]+'</button>').join('')+'</div><button class="btn block" data-a="vqgo">Comença (12 preguntes)</button>';
 ACT.vqs=v=>{VQ.sel=v;showCur()};
 ACT.vqgo=()=>{const qs=[];while(qs.length<12){const q=verbQ(vpool()[rnd(vpool().length)],VQ.sel==='all'?null:VQ.sel);if(q)qs.push(q)}startSession(qs,{per:8})};
+ACT.voicehide=()=>{S.seen.voice=1;save();showCur()};
 

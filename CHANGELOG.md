@@ -1,19 +1,38 @@
 # Changelog · Camí Català
 
-## v7 (2026-11-07)
+## v8 (2026-11-07)
+- **Fusión de las dos líneas de desarrollo.** Hasta ahora había dos v5/v6 paralelas: la de audio + consejos (v5–v7, abajo) y la de «Sobre mi» + puertas de práctica (v5b–v6b). La web había quedado con la primera y sin la segunda; esta versión las junta (el código partido en `src/` está al día).
+- **Vocabulario como en euskera**: cada tema muestra su barra y su porcentaje de dominio, más el dominio global del nivel; cada palabra tiene un nivel 0–4 que sube al acertar y baja al fallar, y cuanto menos dominas una palabra más sale. Las sesiones no repiten palabra ni significado (cuestionario de 10, tarjetas, mezcla, «Escolta i tria», práctica mixta). Las preguntas de escribir salen cuando ya dominas algo la palabra.
+- Buscador dentro de Vocabulari, botón al diccionario y «Barreja-ho tot · 10 preguntes». Los temas siguen con candado hasta acabar la lliçó (puerta de práctica).
+- Prueba `tests/t-v8-vocabulari.js`.
+
+## v7 (línea audio y consejos) (2026-11-07)
 - Revisión de todos los consejos de las lecciones (205 + 97): corregidos errores (géneros que no cambian respecto al castellano, colores invariables con matiz de la norma, soler, perfet/perifràstic, imperativos irregulares, conectores concesivos, etc.).
 - Explicaciones más amplias en las 651 preguntas: ahora dicen la regla, un ejemplo y el contraste con el castellano.
 - Nueva ayuda 💡 en las 146 preguntas de escribir: pista de la forma sin dar la respuesta.
 - Arreglos puntuales: «M'agrada» (lección 28) y una opción de «per / per a» (lección 211) que contradecía el consejo.
 
-## v6 (2026-11-07)
+## v6 (línea audio y consejos) (2026-11-07)
 - Audio: el texto se convierte a cómo se dice antes de reproducirlo: números, años, teléfonos y códigos postales, ordinales (1r, 2a, 5è), %, €, rangos (2-1 → «dos a un»), flechas, guiones, barras y puntos suspensivos; «(= x)» se lee «o sigui, x».
 - Selección de la mejor voz catalana disponible (premium/mejorada primero) y selector de voz + velocidad en Jo → Veu.
 - Aviso en Inici e instrucciones (iOS/Android) cuando el dispositivo no tiene voz catalana instalada.
 
-## v5 (2026-11-07)
+## v5 (línea audio y consejos) (2026-11-07)
 - Audio de los números: «vint-i-cinc», «trenta-dos»… se pronuncian como se dicen (vinti cinc, trenta dos). La escritura no cambia: siguen con guiones.
 - Explicaciones en castellano: corregidas palabras en catalán que se habían colado (lliçó/lliçons, participis, infinitiu, gerundi, indicatiu…) y referencias a pestañas que no existen (Repàs → Paraules fluixes).
+
+## v6b (línea «Sobre mi») (2026-11-07)
+- **Sobre mi**: formulario (nombre, pueblo, edad) y frases de práctica con tus datos (em dic…, sóc de/d'…, tinc N anys, con el número en catalán). Se guarda solo en el navegador; editable y borrable desde Jo → Ajustos.
+- **Frases noves**: generador por plantillas (tinc / vull / necessito / m'agrada / on és + nombre) con solo verbos y palabras ya estudiados.
+- **Puerta de práctica**: la práctica mixta, el repte quotidià, «Escolta i tria» y el quiz de verbs solo usan palabras de temas, verbos y tiempos de lliçons acabades; los temas de Vocabulari se muestran con candado hasta entonces; el constructor de frases solo usa frases A2 cuando hay alguna lliçó A2 hecha. El código de acceso lo abre todo.
+- **A2 con menos castellano**: las traducciones de los ejemplos y de las paraules clau en lliçons A2 salen difuminadas hasta tocarlas (ajustable en Ajustos).
+- Prueba `tests/t-v6-nuevas.js`.
+
+## v5b (línea «Sobre mi») (2026-11-07)
+- Tema **Automàtic** ahora sigue de verdad al sistema (claro/oscuro) y reacciona si cambia con la app abierta.
+- Codi d'accés (hash, no legible en el HTML) en Perfil → Ajustos: abre todos los jocs sin acabar lliçons.
+- Resum de la lliçó (objetivos y palabras clave) al terminar la práctica de cada lliçó.
+- Prueba nueva en `tests/`.
 
 ## v4 (2026-11-07)
 - Jocs con bloqueos por progreso, como en la versión euskera, para no adelantar materia: Contrarellotge de verbs y Pluja de verbs se abren al acabar la lliçó 7 (A1); Contrarellotge de paraules al tener vocabulario visto; cada tema de Parelles se abre al acabar la lliçó donde se trabaja.

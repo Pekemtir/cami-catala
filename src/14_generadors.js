@@ -7,7 +7,7 @@ function distract(w,n,field){const p=pool(w.lv).filter(x=>x.ca!==w.ca&&x[field]!
   const same=p.filter(x=>((x.ca.match(ART)||[''])[0].trim().toLowerCase())===art);
   const base=same.length>=n+3?same:p;
   const u=[];for(const x of shuf(base)){if(!u.includes(x[field]))u.push(x[field]);if(u.length>=n)break}return u}
-function vq(w,mode){mode=mode||['c1','c2','l','t'][rnd(4)];const key='w:'+w.ca;
+function vq(w,mode){if(!mode){const m=mast(w.ca),r=Math.random();mode=(m>=2&&r<.5)?'t':r<.5?'c1':r<.8?'c2':'l'}const key='w:'+w.ca;
   if(mode==='c1')return{k:'choice',kind:'Vocabulari',p:'«'+esc(w.ca)+'» vol dir…',say:w.ca,ans:w.es,opts:distract(w,3,'es'),e:w.ca+' = '+w.es,key};
   if(mode==='c2')return{k:'choice',kind:'Vocabulari',p:'¿Cómo se dice «'+esc(w.es)+'» en catalán?',ans:w.ca,opts:distract(w,3,'ca'),e:w.es+' = '+w.ca,key,sayAns:1};
   if(mode==='l')return{k:'choice',kind:'Escolta i tria',p:'Escucha y elige el significado',say:w.ca,hide:1,ans:w.es,opts:distract(w,3,'es'),e:w.ca+' = '+w.es,key};
@@ -43,10 +43,10 @@ function keyToQ(key){try{const t=key[0],r=key.slice(2);
   if(t==='v'){const[inf,te,p]=r.split('.');return VERBS[inf]?verbQ(inf,te,+p):null}
   if(t==='s'){const s=SENT[+r];return s?sentQ2(s):null}}catch(e){}return null}
 function sentQ2(s){const ex=s.x.length?s.x:pick(SENT.filter(z=>z!==s).flatMap(z=>z.t).filter(w=>!s.t.includes(w)),2);return{k:'build',kind:'Construeix la frase',es:s.es,tok:s.t,extra:[...new Set(ex)].slice(0,2),ans:s.t.join(' '),tip:s.tip,key:'s:'+SENT.indexOf(s)}}
-function mixQ(n){const out=[];const doneL=Object.keys(S.done);const lids=doneL.length?doneL:LESSONS.filter(l=>l.lv==='a1').slice(0,6).map(l=>l.id);
+function mixQ(n){const out=[];const usedW=[];const doneL=Object.keys(S.done);const lids=doneL.length?doneL:LESSONS.filter(l=>l.lv==='a1').slice(0,6).map(l=>l.id);
   while(out.length<n){const r=rnd(10);let q=null;
     if(r<4){const l=LSM[lids[rnd(lids.length)]];q=lq(l.id,rnd(l.qs.length))}
-    else if(r<7){const sp=seenPool();q=vq(sp[rnd(sp.length)])}
+    else if(r<7){const sp=seenPool();const w=pickWords(sp.filter(x=>!usedW.includes(x.ca)),1)[0]||sp[rnd(sp.length)];usedW.push(w.ca);q=vq(w)}
     else if(r<9){const vp=vpool();q=verbQ(vp[rnd(vp.length)])}
     else q=sentQ(rnd(2)?'a1':null);
     if(q)out.push(q)}return out}

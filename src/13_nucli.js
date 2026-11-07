@@ -9,11 +9,11 @@ const norm=s=>nfc(s).normalize('NFD').replace(/[̀-ͯ]/g,'').normalize('NFC');
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const yest=()=>{const d=new Date(Date.now()-864e5);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const KEY='cami-catala-v1';
-const DEF={v:1,xp:0,streak:0,last:'',day:{d:'',xp:0},goal:30,done:{},weak:{},badges:{},tests:{},self:{},stat:{ok:0,tot:0,verb:0,games:0,perfect:0},best:{},set:{voice:true,theme:'auto'},seen:{}};
+const DEF={v:1,xp:0,streak:0,last:'',day:{d:'',xp:0},goal:30,done:{},weak:{},m:{},badges:{},tests:{},self:{},stat:{ok:0,tot:0,verb:0,games:0,perfect:0},best:{},set:{voice:true,theme:'auto',rate:.9,voiceName:''},seen:{}};
 let S;
 function load(){try{const r=localStorage.getItem(KEY);S=r?Object.assign({},DEF,JSON.parse(r)):JSON.parse(JSON.stringify(DEF))}catch(e){S=JSON.parse(JSON.stringify(DEF))}
-  ['done','weak','badges','tests','self','best','seen'].forEach(k=>{if(!S[k]||typeof S[k]!=='object')S[k]={}});
-  S.stat=Object.assign({ok:0,tot:0,verb:0,games:0,perfect:0},S.stat);S.set=Object.assign({voice:true,theme:'auto'},S.set);S.day=S.day||{d:'',xp:0}}
+  ['done','weak','m','badges','tests','self','best','seen'].forEach(k=>{if(!S[k]||typeof S[k]!=='object')S[k]={}});
+  S.stat=Object.assign({ok:0,tot:0,verb:0,games:0,perfect:0},S.stat);S.set=Object.assign({voice:true,theme:'auto',rate:.9,voiceName:''},S.set);S.day=S.day||{d:'',xp:0}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 load();
 function applyTheme(){let t=S.set.theme;const r=document.documentElement;if(t==='auto'){try{t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){t='dark'}}r.setAttribute('data-theme',t)}
@@ -48,15 +48,43 @@ function addXP(n){if(!n)return;const t=today();
   if(before<S.goal&&S.day.xp>=S.goal)toast('🎯 Objectiu diari assolit!');
   checkBadges();save()}
 /* ----- voz ----- */
-let CAV=null;
-function pickVoice(){try{const v=speechSynthesis.getVoices();CAV=v.find(x=>/^ca([-_]|$)/i.test(x.lang))||null}catch(e){}}
-try{pickVoice();speechSynthesis.onvoiceschanged=pickVoice}catch(e){}
-function say(t,rate){if(!S.set.voice)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(t).replace(/<[^>]+>/g,'').replace(/\s*\/\s*/g,', '));u.lang='ca-ES';if(CAV)u.voice=CAV;u.rate=rate||.9;speechSynthesis.speak(u)}catch(e){}}
+let CAV=null,VOICES=[];
+const ORD={r:{1:'primer',3:'tercer'},n:{2:'segon'},t:{4:'quart'},a:{1:'primera',2:'segona',3:'tercera',4:'quarta'},'è':{5:'cinquè',6:'sisè',7:'setè',8:'vuitè',9:'novè',10:'desè'}};
+const isCa=v=>/^ca([-_]|$)/i.test(v.lang)||/catal|montserrat|jordi|enric|n[uú]ria|\bona\b/i.test(v.name);
+function pickVoice(){try{VOICES=speechSynthesis.getVoices()||[];const ca=VOICES.filter(isCa);
+  let v=S&&S.set&&S.set.voiceName?VOICES.find(x=>x.name===S.set.voiceName):null;
+  if(!v)v=ca.find(x=>/premium|enhanced|millorada|natural|neural/i.test(x.name))||ca.find(x=>!/compact/i.test(x.name))||ca[0]||null;
+  CAV=v||null}catch(e){}}
+try{pickVoice();speechSynthesis.onvoiceschanged=()=>{pickVoice();if(typeof CUR!=='undefined'&&CUR.v==='me'&&!document.body.classList.contains('in-session')){try{showCur()}catch(e){}}}}catch(e){}
+function speakable(t){let x=String(t).replace(/<[^>]+>/g,' ');
+  x=x.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F1E6}-\u{1F1FF}️]/gu,' ');
+  x=x.replace(/\(=\s*([^)]*)\)/g,', o sigui, $1');
+  x=x.replace(/\b(\d+)(r|n|t|a|è)\b/g,(m,n,s)=>(ORD[s]&&ORD[s][+n])||m);
+  x=x.replace(/\b(\d+)-(\d+)\b/g,'$1 a $2');
+  x=x.replace(/\b0\d{3,}\b/g,m=>m.split('').map(d=>catNum(+d)).join(' '));
+  x=x.replace(/\b(\d+),(\d+)\b/g,(m,a,b)=>catNum(+a)+' amb '+catNum(+b));
+  x=x.replace(/\b\d+\b/g,m=>m.length>6?m.split('').map(d=>catNum(+d)).join(' '):catNum(+m));
+  x=x.replace(/%/g,' per cent').replace(/€/g,' euros');
+  x=x.replace(/[«»"“”]/g,'').replace(/\s*[—–→]\s*/g,', ').replace(/…/g,', ').replace(/[+=]/g,' ').replace(/\s*\/\s*/g,', ');
+  x=x.replace(/\bvint-i-/gi,'vinti ').replace(/([a-zà-ú])-(?=[a-zà-ú])/gi,'$1 ');
+  return x.replace(/[’`´]/g,"'").replace(/\s+/g,' ').trim()}
+function say(t,rate){if(!S.set.voice)return;try{speechSynthesis.cancel();if(!CAV)pickVoice();const u=new SpeechSynthesisUtterance(speakable(t));u.lang=CAV?CAV.lang:'ca-ES';if(CAV)u.voice=CAV;u.rate=rate||S.set.rate||.9;speechSynthesis.speak(u)}catch(e){}}
 const spk=(t,c)=>'<button class="spk" data-a="say" data-v="'+esc(t)+'" aria-label="Escolta">🔊</button>';
 /* ----- datos derivados ----- */
 const WM={};VOCAB.forEach(th=>th.w.forEach(w=>{if(!WM[w[0]])WM[w[0]]={ca:w[0],es:w[1],em:w[2]||th.ic,th:th.id,lv:th.lv}}));
 const WORDS=Object.values(WM);
 const THM={};VOCAB.forEach(t=>THM[t.id]=t);
+/* ----- dominio por palabra (0-4): cuanto menos se domina, más sale ----- */
+const mast=k=>S.m[k]||0;
+const bump=(k,ok)=>{S.m[k]=Math.max(0,Math.min(4,mast(k)+(ok?1:-1)))};
+const setPct=t=>{const ws=Object.keys(t.w.reduce((a,w)=>(a[w[0]]=1,a),{}));return Math.round(ws.reduce((a,k)=>a+mast(k),0)/(ws.length*4)*100)};
+const themeWords=t=>{const seen={};return t.w.filter(w=>!seen[w[0]]&&(seen[w[0]]=1)).map(w=>WM[w[0]]).filter(Boolean)};
+/* elige n palabras sin repetir ni la palabra ni el significado, favoreciendo las menos dominadas */
+function pickWords(pool,n,avoid){const p=pool.slice(),out=[],es={};(avoid||[]).forEach(k=>es['#'+k]=1);
+  while(out.length<n&&p.length){const wts=p.map(w=>5-mast(w.ca));let r=Math.random()*wts.reduce((a,b)=>a+b,0),i=0;
+    for(;i<p.length-1;i++){r-=wts[i];if(r<=0)break}
+    const w=p.splice(i,1)[0];const k=nfc(w.es);if(es[k]||es['#'+w.ca])continue;es[k]=1;out.push(w)}
+  return out}
 const LSM={};LESSONS.forEach(l=>LSM[l.id]=l);
 const ART=/^(el|la|l'|els|les|un|una)\s*/i;
 const DIC=[];(function(){const seen=new Set();
