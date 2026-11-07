@@ -27,9 +27,13 @@ V.home=()=>{const nl=nextLesson();const w=wotd();const wk=Object.keys(S.weak).le
   h+='<div class="tiles"><button class="tile" data-a="daily"><span class="ic">📅</span><span class="t">Repte quotidià</span><span class="s">'+(S.seen['dc'+today()]?'Fet avui ✓':'10 preguntes · +30 XP')+'</span></button><button class="tile" data-a="weak"><span class="ic">🔁</span><span class="t">Paraules fluixes</span><span class="s">'+wk+' per repassar</span></button></div>';
   h+='<h2>El teu progrés</h2><div class="card"><div class="row"><b class="grow">A1</b><span class="muted">'+doneCount('a1')+' / 26</span></div><div class="bar"><i style="width:'+pct(doneCount('a1'),26)+'%"></i></div><div class="row" style="margin-top:12px"><b class="grow">A2</b><span class="muted">'+doneCount('a2')+' / 24</span></div><div class="bar"><i style="width:'+pct(doneCount('a2'),24)+'%"></i></div></div>';
   const nb=Object.keys(S.badges).length;h+='<div class="muted">Insígnies: '+nb+' / '+BADGES.length+'</div>';return h};
+const a1Done=()=>LESSONS.filter(l=>l.lv==='a1').every(l=>S.done[l.id]);
+const a2Open=()=>!!(S.set.tkey||a1Done()||(S.tests.a1&&S.tests.a1.pass));
 V.lessons=()=>{const lv=CUR.a||'a1';
   let h='<h1>Lliçons</h1><div class="pills"><button class="pill '+(lv==='a1'?'on':'')+'" data-a="lv" data-v="a1">A1 · '+doneCount('a1')+'/26</button><button class="pill '+(lv==='a2'?'on':'')+'" data-a="lv" data-v="a2">A2 · '+doneCount('a2')+'/24</button></div>';
-  h+=LESSONS.filter(l=>l.lv===lv).map(l=>{const d=S.done[l.id];return'<button class="lrow'+(d?' done':'')+'" data-a="lesson" data-v="'+l.id+'"><span class="n">'+l.n+'</span><span class="ic">'+l.ic+'</span><span class="grow"><b>'+esc(l.ca)+'</b><small>'+esc(l.es)+' · '+l.min+' min</small></span>'+(d?'<span class="ck">✓ '+d.best+'%</span>':'')+'</button>'}).join('');return h};
+  const lk=lv==='a2'&&!a2Open();
+  if(lk)h+='<div class="card jg-lock"><b>🔒 A2 bloquejat</b><p class="muted">S\'obre quan acabes les 26 lliçons de l\'A1, o aprovant el <b>test de nivell A1</b> (40 preguntes, mínim 90 %, un sol intent cada 24 hores), o amb el codi d\'accés.</p><button class="btn" data-a="tests">Fes el test d\'A1</button></div>';
+  h+=LESSONS.filter(l=>l.lv===lv).map(l=>{const d=S.done[l.id];if(lk)return'<button class="lrow jg-lock" data-a="glocked" data-need="Acaba l\'A1 o aprova el test d\'A1"><span class="n">'+l.n+'</span><span class="ic">🔒</span><span class="grow"><b>'+esc(l.ca)+'</b><small>'+esc(l.es)+'</small></span></button>';return'<button class="lrow'+(d?' done':'')+'" data-a="lesson" data-v="'+l.id+'"><span class="n">'+l.n+'</span><span class="ic">'+l.ic+'</span><span class="grow"><b>'+esc(l.ca)+'</b><small>'+esc(l.es)+' · '+l.min+' min</small></span>'+(d?'<span class="ck">✓ '+d.best+'%</span>':'')+'</button>'}).join('');return h};
 /* ----- lección ----- */
 let LP={id:'',p:0};
 V.lesson=id=>{const l=LSM[id];if(LP.id!==id)LP={id,p:0};const n=l.steps.length;const p=LP.p;let h='<div class="muted">'+l.lv.toUpperCase()+' · lliçó '+l.n+'</div><h1>'+l.ic+' '+esc(l.ca)+'</h1><div class="muted">'+esc(l.es)+'</div><div class="bar"><i style="width:'+Math.round(p/(n+2)*100)+'%"></i></div>';
@@ -39,7 +43,7 @@ V.lesson=id=>{const l=LSM[id];if(LP.id!==id)LP={id,p:0};const n=l.steps.length;c
   else{const d=S.done[id];h+='<h2>Practica</h2><div class="card" style="text-align:center"><div class="big">'+(d?'✅':'✏️')+'</div><p>'+l.qs.length+' preguntes sobre aquesta lliçó.'+(d?'<br>Millor resultat: <b>'+d.best+'%</b>':'')+'</p><button class="btn block" data-a="lpractice">'+(d?'Torna-ho a provar':'Comença')+'</button></div>'+(d?(nextOf(id)?'<button class="btn sec block" data-a="lesson" data-v="'+nextOf(id).id+'">Següent lliçó ▶</button>':''):'')}
   h+='<div class="row" style="margin-top:16px"><button class="btn sec grow" data-a="lprev"'+(p===0?' disabled':'')+'>◀ Enrere</button>'+(p<n+2?'<button class="btn grow" data-a="lnext">'+(p===n+1?'Practica ▶':'Següent ▶')+'</button>':'')+'</div>';return h};
 const nextOf=id=>{const i=LESSONS.findIndex(l=>l.id===id);return LESSONS[i+1]};
-ACT.lesson=id=>{go('lesson',id,CUR.v!=='lesson');};
+ACT.lesson=id=>{if(/^a2/.test(id)&&!a2Open()){toast('🔒 A2 bloquejat: acaba l\'A1, aprova el test d\'A1 o usa el codi');return}go('lesson',id,CUR.v!=='lesson');};
 ACT.lnext=()=>{LP.p++;showCur()};ACT.lprev=()=>{if(LP.p>0)LP.p--;showCur()};
 ACT.lpractice=()=>{const l=LSM[LP.id];const qs=shuf(l.qs.map((q,i)=>i)).map(i=>lq(l.id,i));
   startSession(qs,{per:10,bonus:20,onDone:r=>{const sc=Math.round(r.acc*100);

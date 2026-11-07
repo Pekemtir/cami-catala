@@ -1,5 +1,9 @@
 # Changelog · Camí Català
 
+## v10 (2026-11-07)
+- **A2 bloqueado**: las lliçons d'A2 (y el test de nivel A2) se abren al acabar las 26 lliçons de l'A1, al aprobar el test de nivel A1 o con el código de acceso.
+- **Test de nivel**: 40 preguntas, hace falta un 90 % de aciertos (36/40; se quita el mínimo por bloque) y solo se puede hacer un test cada 24 horas (aprobado o no). El código de acceso quita la espera.
+
 ## v9 (2026-11-07)
 - **Juegos bloqueados por dominio de Vocabulari**, como en euskera: Parelles solo abre un tema cuando lo dominas al 60 % (barra y % en cada tema; «General» se abre al dominar uno), y Contrarellotge de paraules exige además haber dominado al menos un tema. Siguen las puertas por lliçó. El código de acceso abre todo.
 
