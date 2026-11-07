@@ -3191,7 +3191,8 @@ function load(){try{const r=localStorage.getItem(KEY);S=r?Object.assign({},DEF,J
   S.stat=Object.assign({ok:0,tot:0,verb:0,games:0,perfect:0},S.stat);S.set=Object.assign({voice:true,theme:'auto'},S.set);S.day=S.day||{d:'',xp:0}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 load();
-function applyTheme(){const t=S.set.theme;const r=document.documentElement;if(t==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',t)}
+function applyTheme(){let t=S.set.theme;const r=document.documentElement;if(t==='auto'){try{t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){t='dark'}}r.setAttribute('data-theme',t)}
+try{matchMedia('(prefers-color-scheme: light)').addEventListener('change',()=>{if(S.set.theme==='auto')applyTheme()})}catch(e){}
 function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
 function streakNow(){return(S.last===today()||S.last===yest())?S.streak:0}
 function dayXP(){return S.day.d===today()?S.day.xp:0}
@@ -3407,7 +3408,8 @@ ACT.lesson=id=>{go('lesson',id,CUR.v!=='lesson');};
 ACT.lnext=()=>{LP.p++;showCur()};ACT.lprev=()=>{if(LP.p>0)LP.p--;showCur()};
 ACT.lpractice=()=>{const l=LSM[LP.id];const qs=shuf(l.qs.map((q,i)=>i)).map(i=>lq(l.id,i));
   startSession(qs,{per:10,bonus:20,onDone:r=>{const sc=Math.round(r.acc*100);
-    if(r.acc>=.6){const o=S.done[l.id];S.done[l.id]={best:Math.max(o?o.best:0,sc),date:today()};if(sc===100)S.stat.perfect++;addXP(0);toast('Lliçó completada ✓')}else toast('Repassa la lliçó i torna-ho a provar');save();checkBadges()}})};
+    if(r.acc>=.6){const o=S.done[l.id];S.done[l.id]={best:Math.max(o?o.best:0,sc),date:today()};if(sc===100)S.stat.perfect++;addXP(0);toast('Lliçó completada ✓')}else toast('Repassa la lliçó i torna-ho a provar');r.html=lessonRecap(l);save();checkBadges()}})};
+function lessonRecap(l){const g=(l.goals||[]).map(x=>'<li>'+esc(x)+'</li>').join('');const kw=(l.kw||[]).slice(0,8).map(k=>Array.isArray(k)?k.join(' = '):String(k)).map(esc);return '<div class="card" style="text-align:left;margin-top:14px"><b>📌 Resum de la lliçó</b>'+(g?'<ul>'+g+'</ul>':'')+(kw.length?'<p class="muted">'+kw.join(' · ')+'</p>':'')+'</div>'}
 ACT.lv=v=>{CUR.a=v;showCur()};
 ACT.done=()=>showCur();ACT.up=()=>up();
 ACT.tab=v=>go(v);
@@ -3468,7 +3470,7 @@ const JG={t:null,r:null,live:false,stop(){if(this.t){clearInterval(this.t);this.
 const one=a=>a[rnd(a.length)];
 const stripA=s=>String(s).replace(/^(el|la|l'|els|les|un|una) ?/i,'');
 const GT=['pres','perf','perif','imp','fut','cond','subj'];
-const dn=id=>!!S.done[id];
+const dn=id=>!!(S.set.tkey||S.done[id]);
 const lname=id=>{const l=LSM[id];return l?'lliçó '+l.n+' ('+l.lv.toUpperCase()+') «'+l.ca+'»':id};
 const TREQ={num2:'a110',paisos:'a12',mobles:'a15',fruita:'a110',begudes:'a110',botigues:'a110',temps:'a111',salut2:'a116',roba:'a119',escola:'a120',transport:'a118',animals:'a124',natura:'a124',petites:'a114',adj3:'a119',telefon:'a125',allotjament:'a220',mitjans:'a222',oci:'a222',estudis:'a223',tecnologia:'a222',banc:'a221',habitatge:'a221',caracter:'a212',cuina:'a217',compres2:'a213'};
 const THREF={};LESSONS.forEach(l=>l.th.forEach(t=>{(THREF[t]=THREF[t]||[]).push(l.id)}));
@@ -3624,9 +3626,12 @@ ACT.selfck=(v,el)=>{if(el.checked)S.self[v]=1;else delete S.self[v];save();showC
 V.me=()=>{const acc=pct(S.stat.ok,S.stat.tot);
   let h='<h1>Jo</h1><div class="tiles"><div class="card"><small class="muted">XP total</small><div style="font:400 30px var(--f-d)">⭐ '+S.xp+'</div></div><div class="card"><small class="muted">Ratxa</small><div style="font:400 30px var(--f-d)">🔥 '+streakNow()+'</div></div><div class="card"><small class="muted">Encerts</small><div style="font:400 30px var(--f-d)">'+acc+'%</div></div></div>';
   h+='<h2>Insígnies</h2><div class="badges">'+BADGES.map(b=>'<div class="badge'+(S.badges[b[0]]?'':' off')+'" title="'+esc(b[3])+'">'+b[1]+' <b>'+esc(b[2])+'</b></div>').join('')+'</div>';
-  h+='<h2>Ajustos</h2><div class="card"><b>Objectiu diari</b><div class="pills">'+[10,30,50,100].map(g=>'<button class="pill '+(S.goal===g?'on':'')+'" data-a="goal" data-v="'+g+'">'+g+' XP</button>').join('')+'</div><b>Aspecte</b><div class="pills">'+[['auto','Automàtic'],['dark','Pissarra'],['light','Paper']].map(x=>'<button class="pill '+(S.set.theme===x[0]?'on':'')+'" data-a="theme_set" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</div><b>Veu</b><div class="pills"><button class="pill '+(S.set.voice?'on':'')+'" data-a="voice">'+(S.set.voice?'🔊 Activada':'🔇 Silenciada')+'</button></div>'+(CAV?'':'<p class="muted">Aquest dispositiu no té veu catalana instal·lada; la pronunciació pot ser aproximada.</p>')+'</div>';
+  h+='<h2>Ajustos</h2><div class="card"><b>Objectiu diari</b><div class="pills">'+[10,30,50,100].map(g=>'<button class="pill '+(S.goal===g?'on':'')+'" data-a="goal" data-v="'+g+'">'+g+' XP</button>').join('')+'</div><b>Aspecte</b><div class="pills">'+[['auto','Automàtic'],['dark','Pissarra'],['light','Paper']].map(x=>'<button class="pill '+(S.set.theme===x[0]?'on':'')+'" data-a="theme_set" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</div><b>Veu</b><div class="pills"><button class="pill '+(S.set.voice?'on':'')+'" data-a="voice">'+(S.set.voice?'🔊 Activada':'🔇 Silenciada')+'</button></div>'+'<b>Codi d\'accés</b><p class="muted">Per a professorat o per provar l\'app: obre tots els jocs sense acabar les lliçons.</p>'+(S.set.tkey?'<p class="ok">Accés especial actiu.</p><button class="btn sec small" data-a="tcodeoff">Desactiva</button>':'<div class="row"><input id="tc" class="grow" type="text" placeholder="Codi" autocomplete="off" autocapitalize="off" spellcheck="false" style="min-width:0;padding:10px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--ink)"><button class="btn sec small" data-a="tcode">Entra</button></div>')+(CAV?'':'<p class="muted">Aquest dispositiu no té veu catalana instal·lada; la pronunciació pot ser aproximada.</p>')+'</div>';
   h+='<h2>Més</h2><div class="tiles"><button class="tile" data-a="tests"><span class="ic">🧪</span><span class="t">Test de nivell</span><span class="s">A1 i A2</span></button><button class="tile" data-a="self"><span class="ic">✅</span><span class="t">Autoavaluació</span><span class="s">Què sé fer?</span></button><button class="tile" data-a="backup"><span class="ic">💾</span><span class="t">Còpia de seguretat</span><span class="s">Exporta / importa</span></button><button class="tile" data-a="legal"><span class="ic">⚖️</span><span class="t">Crèdits i legal</span><span class="s">Llicències</span></button></div>';
   h+='<h2>Reinicia</h2><button class="btn sec" id="rst" data-a="reset">Esborra el progrés</button>';return h};
+const h32=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)};
+ACT.tcode=()=>{const v=($('#tc').value||'').toLowerCase().replace(/\s+/g,'');if(h32(v)==='4dcmnv'){S.set.tkey=1;save();toast('🔓 Accés especial actiu: tots els jocs oberts');showCur()}else toast('Codi incorrecte')};
+ACT.tcodeoff=()=>{S.set.tkey=0;save();showCur()};
 ACT.goal=v=>{S.goal=+v;save();showCur()};ACT.theme_set=v=>{S.set.theme=v;save();applyTheme();showCur()};ACT.voice=()=>{S.set.voice=!S.set.voice;save();showCur()};
 let RST=0;ACT.reset=()=>{if(!RST){RST=1;$('#rst').textContent='Segur? Torna a tocar per esborrar-ho tot';setTimeout(()=>RST=0,4000);return}RST=0;S=JSON.parse(JSON.stringify(DEF));save();toast('Progrés esborrat');go('home')};
 ACT.backup=()=>go('backup',null,true);ACT.legal=()=>go('legal',null,true);

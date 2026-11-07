@@ -1,5 +1,11 @@
 # Changelog · Camí Català
 
+## v5 (2026-11-07)
+- Tema **Automàtic** ahora sigue de verdad al sistema (claro/oscuro) y reacciona si cambia con la app abierta.
+- Codi d'accés (hash, no legible en el HTML) en Perfil → Ajustos: abre todos los jocs sin acabar lliçons.
+- Resum de la lliçó (objetivos y palabras clave) al terminar la práctica de cada lliçó.
+- Prueba nueva en `tests/`.
+
 ## v4 (2026-11-07)
 - Jocs con bloqueos por progreso, como en la versión euskera, para no adelantar materia: Contrarellotge de verbs y Pluja de verbs se abren al acabar la lliçó 7 (A1); Contrarellotge de paraules al tener vocabulario visto; cada tema de Parelles se abre al acabar la lliçó donde se trabaja.
 - Los tiempos verbales (presente → perfet → perifràstic → imperfet → futur → condicional → subjuntiu) y los verbos (regulares, pronominales, irregulares) solo salen cuando ya se han estudiado; los demás aparecen con candado.
