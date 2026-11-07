@@ -1,5 +1,11 @@
 # Changelog · Camí Català
 
+## v7 (2026-11-07)
+- Revisión de todos los consejos de las lecciones (205 + 97): corregidos errores (géneros que no cambian respecto al castellano, colores invariables con matiz de la norma, soler, perfet/perifràstic, imperativos irregulares, conectores concesivos, etc.).
+- Explicaciones más amplias en las 651 preguntas: ahora dicen la regla, un ejemplo y el contraste con el castellano.
+- Nueva ayuda 💡 en las 146 preguntas de escribir: pista de la forma sin dar la respuesta.
+- Arreglos puntuales: «M'agrada» (lección 28) y una opción de «per / per a» (lección 211) que contradecía el consejo.
+
 ## v6 (2026-11-07)
 - Audio: el texto se convierte a cómo se dice antes de reproducirlo: números, años, teléfonos y códigos postales, ordinales (1r, 2a, 5è), %, €, rangos (2-1 → «dos a un»), flechas, guiones, barras y puntos suspensivos; «(= x)» se lee «o sigui, x».
 - Selección de la mejor voz catalana disponible (premium/mejorada primero) y selector de voz + velocidad en Jo → Veu.
