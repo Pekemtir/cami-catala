@@ -2456,7 +2456,7 @@ L(26,'a1','Repàs A1','Repaso A1','🔁',30,
 ['Què saps dir?','<p>Con A1 puedes:</p><ul class="goals"><li>Saludar, presentarte y hablar de tu familia.</li><li>Pedir en un bar, en una tienda y en una oficina.</li><li>Hablar de tu rutina, de tu casa y de tu barrio.</li><li>Dar y pedir indicaciones.</li><li>Contar lo que has hecho hoy con el perfet.</li></ul>','',[['Em dic Pau, tinc trenta anys i sóc de Girona.','Me llamo Pau, tengo treinta años y soy de Girona.'],['Cada dia em llevo a les set i vaig a treballar en metro.','Cada día me levanto a las siete y voy a trabajar en metro.'],['Avui he comprat pa i he fet un cafè.','Hoy he comprado pan y he hecho un café.'],['Perdoni, on és l\'ajuntament?','Perdone, ¿dónde está el ayuntamiento?']],'Revisa las lecciones donde más fallas y usa <b>Paraules fluixes</b> en la pestaña Pràctica.'],
 ['Errors habituals','<p>Hay errores típicos de hispanohablantes. Evítalos:</p>',mt(['No digas…','Di…'],[['tinc que anar','<b>he d\'anar</b>'],['vaig a anar demà','<b>aniré demà</b> o <b>demà vaig</b>'],['pel·lícula / pelicula','<b>pel·lícula</b> (l·l)'],['el sang','<b>la sang</b> (femenino)'],['m\'agrada els gats','<b>m\'agraden els gats</b>'],['porto 3 anys vivint aquí','<b>fa tres anys que visc aquí</b>'],['bona dia','<b>bon dia</b>'],['què hora és','<b>quina hora és</b>']]),[['He d\'anar a la feina.','Tengo que ir al trabajo.'],['M\'agraden els gats.','Me gustan los gatos.'],['Fa tres anys que visc aquí.','Hace tres años que vivo aquí.']],'Los errores más comunes son el <b>calco del castellano</b> (tinc que, vaig a + inf. como futuro) y la <b>concordancia del posesivo</b> (<b>la meva mare</b>, no «el meva mare»).'],
 ['Estructures clau','<p>Un mapa de las estructuras principales:</p>',mt(['Función','Estructura','Ejemplo'],[['presentarse','Sóc… / Em dic…','Sóc Anna.'],['pedir','Voldria / Em porta…?','Voldria un cafè.'],['localizar','hi ha / és a','Hi ha una farmàcia.'],['obligación','he de / cal','He de marxar.'],['gustos','m\'agrada(n)','M\'agrada el mar.'],['pasado reciente','he + participi','He menjat.'],['rutina','em llevo, esmorzo…','Em llevo a les set.'],['direcciones','gira, continua…','Gira a la dreta.']]),[],'Vuelve a leer los cuadros de cada lección cuando dudes.'],
-['Prepara\'t per al test','<p>Cuando termines las 26 lecciones, podrás hacer el <b>test de nivel</b> y pasar al <b>A2</b>. También puedes hacerlo antes si ya sabes bastante: con una puntuación alta saltas directamente a A2.</p>','',[['Test de nivell A1 → A2: 40 preguntas, mínimo 90 %.','Test de nivel A1 → A2.'],['Si no lo superas, puedes repetirlo en 24 horas.','Si no lo apruebas, repite en 24 horas.']],'Haz antes unas sesiones de <b>Paraules fluixes</b> y de <b>Vocabulari</b> (pestaña Pràctica).']
+['Prepara\'t per al test','<p>Cuando termines las 26 lecciones, podrás hacer el <b>test de nivel</b> y pasar al <b>A2</b>. También puedes hacerlo antes si ya sabes bastante: con una puntuación alta saltas directamente a A2.</p>','',[['Test de nivell A1 → A2: 40 preguntes, mínim 90 %.','Test de nivel A1 → A2: 40 preguntas, mínimo 90 %.'],['Si no el superes, el pots repetir d\'aquí a vint-i-quatre hores.','Si no lo superas, puedes repetirlo pasadas 24 horas.']],'Haz antes unas sesiones de <b>Paraules fluixes</b> y de <b>Vocabulari</b> (pestaña Pràctica).']
 ],
 [['el repàs','el repaso'],['saber','saber'],['dir','decir'],['entendre','entender'],['la pregunta','la pregunta'],['la resposta','la respuesta'],['l\'error','el error'],['la regla','la regla'],['practicar','practicar'],['el nivell','el nivel']],
 [
@@ -3188,11 +3188,11 @@ const norm=s=>nfc(s).normalize('NFD').replace(/[̀-ͯ]/g,'').normalize('NFC');
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const yest=()=>{const d=new Date(Date.now()-864e5);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const KEY='cami-catala-v1';
-const DEF={v:1,xp:0,streak:0,last:'',day:{d:'',xp:0},goal:30,done:{},weak:{},badges:{},tests:{},self:{},stat:{ok:0,tot:0,verb:0,games:0,perfect:0},best:{},set:{voice:true,theme:'auto'},seen:{}};
+const DEF={v:1,xp:0,streak:0,last:'',day:{d:'',xp:0},goal:30,done:{},weak:{},badges:{},tests:{},self:{},stat:{ok:0,tot:0,verb:0,games:0,perfect:0},best:{},set:{voice:true,theme:'auto',rate:.9,voiceName:''},seen:{}};
 let S;
 function load(){try{const r=localStorage.getItem(KEY);S=r?Object.assign({},DEF,JSON.parse(r)):JSON.parse(JSON.stringify(DEF))}catch(e){S=JSON.parse(JSON.stringify(DEF))}
   ['done','weak','badges','tests','self','best','seen'].forEach(k=>{if(!S[k]||typeof S[k]!=='object')S[k]={}});
-  S.stat=Object.assign({ok:0,tot:0,verb:0,games:0,perfect:0},S.stat);S.set=Object.assign({voice:true,theme:'auto'},S.set);S.day=S.day||{d:'',xp:0}}
+  S.stat=Object.assign({ok:0,tot:0,verb:0,games:0,perfect:0},S.stat);S.set=Object.assign({voice:true,theme:'auto',rate:.9,voiceName:''},S.set);S.day=S.day||{d:'',xp:0}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 load();
 function applyTheme(){const t=S.set.theme;const r=document.documentElement;if(t==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',t)}
@@ -3226,11 +3226,27 @@ function addXP(n){if(!n)return;const t=today();
   if(before<S.goal&&S.day.xp>=S.goal)toast('🎯 Objectiu diari assolit!');
   checkBadges();save()}
 /* ----- voz ----- */
-let CAV=null;
-function pickVoice(){try{const v=speechSynthesis.getVoices();CAV=v.find(x=>/^ca([-_]|$)/i.test(x.lang))||null}catch(e){}}
-try{pickVoice();speechSynthesis.onvoiceschanged=pickVoice}catch(e){}
-function speakable(t){return String(t).replace(/<[^>]+>/g,'').replace(/\s*\/\s*/g,', ').replace(/\bvint-i-/gi,'vinti ').replace(/([a-zà-ú])-(?=[a-zà-ú])/gi,'$1 ')}
-function say(t,rate){if(!S.set.voice)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(speakable(t));u.lang='ca-ES';if(CAV)u.voice=CAV;u.rate=rate||.9;speechSynthesis.speak(u)}catch(e){}}
+let CAV=null,VOICES=[];
+const ORD={r:{1:'primer',3:'tercer'},n:{2:'segon'},t:{4:'quart'},a:{1:'primera',2:'segona',3:'tercera',4:'quarta'},'è':{5:'cinquè',6:'sisè',7:'setè',8:'vuitè',9:'novè',10:'desè'}};
+const isCa=v=>/^ca([-_]|$)/i.test(v.lang)||/catal|montserrat|jordi|enric|n[uú]ria|\bona\b/i.test(v.name);
+function pickVoice(){try{VOICES=speechSynthesis.getVoices()||[];const ca=VOICES.filter(isCa);
+  let v=S&&S.set&&S.set.voiceName?VOICES.find(x=>x.name===S.set.voiceName):null;
+  if(!v)v=ca.find(x=>/premium|enhanced|millorada|natural|neural/i.test(x.name))||ca.find(x=>!/compact/i.test(x.name))||ca[0]||null;
+  CAV=v||null}catch(e){}}
+try{pickVoice();speechSynthesis.onvoiceschanged=()=>{pickVoice();if(typeof CUR!=='undefined'&&CUR.v==='me'&&!document.body.classList.contains('in-session')){try{showCur()}catch(e){}}}}catch(e){}
+function speakable(t){let x=String(t).replace(/<[^>]+>/g,' ');
+  x=x.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F1E6}-\u{1F1FF}️]/gu,' ');
+  x=x.replace(/\(=\s*([^)]*)\)/g,', o sigui, $1');
+  x=x.replace(/\b(\d+)(r|n|t|a|è)\b/g,(m,n,s)=>(ORD[s]&&ORD[s][+n])||m);
+  x=x.replace(/\b(\d+)-(\d+)\b/g,'$1 a $2');
+  x=x.replace(/\b0\d{3,}\b/g,m=>m.split('').map(d=>catNum(+d)).join(' '));
+  x=x.replace(/\b(\d+),(\d+)\b/g,(m,a,b)=>catNum(+a)+' amb '+catNum(+b));
+  x=x.replace(/\b\d+\b/g,m=>m.length>6?m.split('').map(d=>catNum(+d)).join(' '):catNum(+m));
+  x=x.replace(/%/g,' per cent').replace(/€/g,' euros');
+  x=x.replace(/[«»"“”]/g,'').replace(/\s*[—–→]\s*/g,', ').replace(/…/g,', ').replace(/[+=]/g,' ').replace(/\s*\/\s*/g,', ');
+  x=x.replace(/\bvint-i-/gi,'vinti ').replace(/([a-zà-ú])-(?=[a-zà-ú])/gi,'$1 ');
+  return x.replace(/[’`´]/g,"'").replace(/\s+/g,' ').trim()}
+function say(t,rate){if(!S.set.voice)return;try{speechSynthesis.cancel();if(!CAV)pickVoice();const u=new SpeechSynthesisUtterance(speakable(t));u.lang=CAV?CAV.lang:'ca-ES';if(CAV)u.voice=CAV;u.rate=rate||S.set.rate||.9;speechSynthesis.speak(u)}catch(e){}}
 const spk=(t,c)=>'<button class="spk" data-a="say" data-v="'+esc(t)+'" aria-label="Escolta">🔊</button>';
 /* ----- datos derivados ----- */
 const WM={};VOCAB.forEach(th=>th.w.forEach(w=>{if(!WM[w[0]])WM[w[0]]={ca:w[0],es:w[1],em:w[2]||th.ic,th:th.id,lv:th.lv}}));
@@ -3388,7 +3404,7 @@ const nextLesson=()=>LESSONS.find(l=>!S.done[l.id]);
 function ring(p){const r=34,c=2*Math.PI*r;return'<svg class="ring" viewBox="0 0 80 80" role="img" aria-label="Objectiu diari"><circle class="bg" cx="40" cy="40" r="'+r+'"/><circle class="fg" cx="40" cy="40" r="'+r+'" stroke-dasharray="'+c+'" stroke-dashoffset="'+(c*(1-Math.min(1,p)))+'" transform="rotate(-90 40 40)"/><text x="40" y="47" text-anchor="middle">'+Math.round(Math.min(1,p)*100)+'%</text></svg>'}
 function wotd(){const d=Math.floor(Date.now()/864e5);return WORDS[d%WORDS.length]}
 V.home=()=>{const nl=nextLesson();const w=wotd();const wk=Object.keys(S.weak).length;
-  let h='<h1>Bon dia!</h1><p class="muted">Curs de català A1 + A2</p>';
+  let h=(!CAV&&S.set.voice&&!S.seen.voice?'<div class="card ch"><b>🔊 Veu catalana</b><p class="muted" style="margin:6px 0">No hem detectat cap veu catalana al dispositiu. Instal·la-la perquè el català soni bé (instruccions a Jo → Ajustos).</p><button class="btn sm sec" data-a="voicehide">Entesos</button></div>':'')+'<h1>Bon dia!</h1><p class="muted">Curs de català A1 + A2</p>';
   h+='<div class="card goal">'+ring(dayXP()/S.goal)+'<div class="grow"><b style="font:400 24px var(--f-d)">Objectiu d\'avui</b><div class="muted">'+dayXP()+' / '+S.goal+' XP · ratxa '+streakNow()+' '+(streakNow()===1?'dia':'dies')+'</div></div></div>';
   if(nl)h+='<button class="lrow" data-a="lesson" data-v="'+nl.id+'" style="border-color:var(--yel)"><span class="ic">'+nl.ic+'</span><span class="grow"><small>Continua · '+nl.lv.toUpperCase()+' lliçó '+nl.n+'</small><b>'+esc(nl.ca)+'</b><small>'+esc(nl.es)+'</small></span><span>▶</span></button>';
   else h+='<div class="card">🎉 Has completat tot el curs. Segueix repassant!</div>';
@@ -3467,6 +3483,7 @@ let VQ={sel:'all'};
 V.vquiz=()=>'<h1>Quiz de verbs</h1><p class="muted">Completa la forma verbal correcta. Tria el temps.</p><div class="pills"><button class="pill '+(VQ.sel==='all'?'on':'')+'" data-a="vqs" data-v="all">Tots</button>'+TENSES.map(t=>'<button class="pill '+(VQ.sel===t?'on':'')+'" data-a="vqs" data-v="'+t+'">'+VT_NAMES[t][0]+'</button>').join('')+'</div><button class="btn block" data-a="vqgo">Comença (12 preguntes)</button>';
 ACT.vqs=v=>{VQ.sel=v;showCur()};
 ACT.vqgo=()=>{const qs=[];while(qs.length<12){const q=verbQ(VLIST[rnd(VLIST.length)],VQ.sel==='all'?null:VQ.sel);if(q)qs.push(q)}startSession(qs,{per:8})};
+ACT.voicehide=()=>{S.seen.voice=1;save();showCur()};
 
 /* ===== JUEGOS (estilo sala de juegos: Contrarellotge, Parelles, Pluja de verbs) ===== */
 const JG={t:null,r:null,live:false,stop(){if(this.t){clearInterval(this.t);this.t=null}if(this.r){cancelAnimationFrame(this.r);this.r=null}this.live=false}};
@@ -3629,9 +3646,17 @@ ACT.selfck=(v,el)=>{if(el.checked)S.self[v]=1;else delete S.self[v];save();showC
 V.me=()=>{const acc=pct(S.stat.ok,S.stat.tot);
   let h='<h1>Jo</h1><div class="tiles"><div class="card"><small class="muted">XP total</small><div style="font:400 30px var(--f-d)">⭐ '+S.xp+'</div></div><div class="card"><small class="muted">Ratxa</small><div style="font:400 30px var(--f-d)">🔥 '+streakNow()+'</div></div><div class="card"><small class="muted">Encerts</small><div style="font:400 30px var(--f-d)">'+acc+'%</div></div></div>';
   h+='<h2>Insígnies</h2><div class="badges">'+BADGES.map(b=>'<div class="badge'+(S.badges[b[0]]?'':' off')+'" title="'+esc(b[3])+'">'+b[1]+' <b>'+esc(b[2])+'</b></div>').join('')+'</div>';
-  h+='<h2>Ajustos</h2><div class="card"><b>Objectiu diari</b><div class="pills">'+[10,30,50,100].map(g=>'<button class="pill '+(S.goal===g?'on':'')+'" data-a="goal" data-v="'+g+'">'+g+' XP</button>').join('')+'</div><b>Aspecte</b><div class="pills">'+[['auto','Automàtic'],['dark','Pissarra'],['light','Paper']].map(x=>'<button class="pill '+(S.set.theme===x[0]?'on':'')+'" data-a="theme_set" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</div><b>Veu</b><div class="pills"><button class="pill '+(S.set.voice?'on':'')+'" data-a="voice">'+(S.set.voice?'🔊 Activada':'🔇 Silenciada')+'</button></div>'+(CAV?'':'<p class="muted">Aquest dispositiu no té veu catalana instal·lada; la pronunciació pot ser aproximada.</p>')+'</div>';
+  h+='<h2>Ajustos</h2><div class="card"><b>Objectiu diari</b><div class="pills">'+[10,30,50,100].map(g=>'<button class="pill '+(S.goal===g?'on':'')+'" data-a="goal" data-v="'+g+'">'+g+' XP</button>').join('')+'</div><b>Aspecte</b><div class="pills">'+[['auto','Automàtic'],['dark','Pissarra'],['light','Paper']].map(x=>'<button class="pill '+(S.set.theme===x[0]?'on':'')+'" data-a="theme_set" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</div><b>Veu</b><div class="pills"><button class="pill '+(S.set.voice?'on':'')+'" data-a="voice">'+(S.set.voice?'🔊 Activada':'🔇 Silenciada')+'</button><button class="pill" data-a="vtest">▶ Prova la veu</button></div><b>Velocitat</b><div class="pills">'+[[.7,'Lent'],[.9,'Normal'],[1.05,'Ràpid']].map(x=>'<button class="pill '+(S.set.rate===x[0]?'on':'')+'" data-a="rate" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</div>'+voiceBox()+'</div>';
   h+='<h2>Més</h2><div class="tiles"><button class="tile" data-a="tests"><span class="ic">🧪</span><span class="t">Test de nivell</span><span class="s">A1 i A2</span></button><button class="tile" data-a="self"><span class="ic">✅</span><span class="t">Autoavaluació</span><span class="s">Què sé fer?</span></button><button class="tile" data-a="backup"><span class="ic">💾</span><span class="t">Còpia de seguretat</span><span class="s">Exporta / importa</span></button><button class="tile" data-a="legal"><span class="ic">⚖️</span><span class="t">Crèdits i legal</span><span class="s">Llicències</span></button></div>';
   h+='<h2>Reinicia</h2><button class="btn sec" id="rst" data-a="reset">Esborra el progrés</button>';return h};
+function voiceBox(){const cas=VOICES.filter(isCa),oth=VOICES.filter(x=>!isCa(x)&&/^es/i.test(x.lang));
+  let h='<b>Veu del dispositiu</b>';
+  if(!cas.length)h+='<p class="muted">No s\'ha trobat cap veu catalana instal·lada, i sense ella el català sonarà amb accent d\'un altre idioma. Per instal·lar-la: <b>iPhone/iPad</b>: Ajustes → Accesibilidad → Contenido leído → Voces → Catalán (descarga «Montserrat»). <b>Android</b>: Ajustes → Idioma → Salida de texto a voz → motor de Google → Instalar datos de voz → Catalán. Després torna aquí.</p>';
+  if(cas.length||oth.length)h+='<select class="fld" id="vsel" aria-label="Veu">'+cas.concat(oth).map(x=>'<option value="'+esc(x.name)+'"'+((CAV&&CAV.name===x.name)?' selected':'')+'>'+esc(x.name)+' ('+esc(x.lang)+')</option>').join('')+'</select>';
+  return h}
+ACT.vtest=()=>say("Bon dia! Em dic Marta, tinc vint-i-cinc anys i visc a Girona.");
+ACT.rate=v=>{S.set.rate=+v;save();say('Vint-i-cinc, trenta-un, quaranta-dos.');showCur()};
+document.addEventListener('change',e=>{if(e.target.id==='vsel'){S.set.voiceName=e.target.value;save();pickVoice();say('Bon dia! Vint-i-cinc.')}});
 ACT.goal=v=>{S.goal=+v;save();showCur()};ACT.theme_set=v=>{S.set.theme=v;save();applyTheme();showCur()};ACT.voice=()=>{S.set.voice=!S.set.voice;save();showCur()};
 let RST=0;ACT.reset=()=>{if(!RST){RST=1;$('#rst').textContent='Segur? Torna a tocar per esborrar-ho tot';setTimeout(()=>RST=0,4000);return}RST=0;S=JSON.parse(JSON.stringify(DEF));save();toast('Progrés esborrat');go('home')};
 ACT.backup=()=>go('backup',null,true);ACT.legal=()=>go('legal',null,true);

@@ -1,5 +1,10 @@
 # Changelog · Camí Català
 
+## v6 (2026-11-07)
+- Audio: el texto se convierte a cómo se dice antes de reproducirlo: números, años, teléfonos y códigos postales, ordinales (1r, 2a, 5è), %, €, rangos (2-1 → «dos a un»), flechas, guiones, barras y puntos suspensivos; «(= x)» se lee «o sigui, x».
+- Selección de la mejor voz catalana disponible (premium/mejorada primero) y selector de voz + velocidad en Jo → Veu.
+- Aviso en Inici e instrucciones (iOS/Android) cuando el dispositivo no tiene voz catalana instalada.
+
 ## v5 (2026-11-07)
 - Audio de los números: «vint-i-cinc», «trenta-dos»… se pronuncian como se dicen (vinti cinc, trenta dos). La escritura no cambia: siguen con guiones.
 - Explicaciones en castellano: corregidas palabras en catalán que se habían colado (lliçó/lliçons, participis, infinitiu, gerundi, indicatiu…) y referencias a pestañas que no existen (Repàs → Paraules fluixes).
