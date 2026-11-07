@@ -8,6 +8,7 @@ const lname=id=>{const l=LSM[id];return l?'lliçó '+l.n+' ('+l.lv.toUpperCase()
 const TREQ={num2:'a110',paisos:'a12',mobles:'a15',fruita:'a110',begudes:'a110',botigues:'a110',temps:'a111',salut2:'a116',roba:'a119',escola:'a120',transport:'a118',animals:'a124',natura:'a124',petites:'a114',adj3:'a119',telefon:'a125',allotjament:'a220',mitjans:'a222',oci:'a222',estudis:'a223',tecnologia:'a222',banc:'a221',habitatge:'a221',caracter:'a212',cuina:'a217',compres2:'a213'};
 const THREF={};LESSONS.forEach(l=>l.th.forEach(t=>{(THREF[t]=THREF[t]||[]).push(l.id)}));
 const themeReq=id=>THREF[id]||[TREQ[id]].filter(Boolean);
+const MIN_DOM=60;
 const themeOpen=id=>{const r=themeReq(id);return !r.length||r.some(dn)};
 const TNEED={pres:'a17',perf:'a121',perif:'a21',imp:'a23',fut:'a25',cond:'a214',subj:'a215'};
 const unlockedT=()=>GT.filter(t=>dn(TNEED[t]));
@@ -15,8 +16,8 @@ const IRR={ser:'a12',tenir:'a12',estar:'a15',anar:'a19',fer:'a19',poder:'a19',vo
 const verbNeed=inf=>{const v=VERBS[inf];if(v.kind==='x')return IRR[inf]||'a121';if(v.pn)return 'a112';return v.kind==='ar'?'a17':'a18'};
 const VPOOL=()=>VLIST.filter(i=>dn(verbNeed(i)));
 const seenWords=()=>{const ids=VOCAB.filter(t=>themeOpen(t.id)&&(THREF[t.id]?THREF[t.id].some(dn):dn(themeReq(t.id)[0]))).map(t=>t.id);return WORDS.filter(w=>ids.includes(w.th))};
-const gOpen={k:()=>dn('a17'),kw:()=>seenWords().length>=12,mem:()=>openSets().length>0,ae:()=>dn('a17')};
-const gNeed={k:'Acaba la '+lname('a17'),kw:'Acaba la '+lname('a12')+' i alguna lliçó més amb vocabulari',mem:'Acaba la '+lname('a11'),ae:'Acaba la '+lname('a17')};
+const gOpen={k:()=>dn('a17'),kw:()=>seenWords().length>=12&&openSets().length>0,mem:()=>openSets().length>0,ae:()=>dn('a17')};
+const gNeed={k:'Acaba la '+lname('a17'),kw:'Acaba alguna lliçó amb vocabulari i domina el '+MIN_DOM+' % d\'un tema (Vocabulari)',mem:'Domina el '+MIN_DOM+' % d\'un tema a Vocabulari (Qüestionari i Targetes)',ae:'Acaba la '+lname('a17')};
 let GS={kt:null,at:null,kwl:'',ml:'a1'};
 function gbestSave(key,score,xp){S.stat.games++;const nb=score>0&&(S.best[key]==null||score>S.best[key]);if(nb)S.best[key]=score;addXP(xp);return nb}
 function jgResult(title,score,unit,key,xp,again,extra){JG.stop();const nb=gbestSave(key,score,xp);
@@ -68,9 +69,10 @@ ACT.gkwgo=()=>{JG.stop();const p=seenWords();let t=60,sc=0,ok=0,fail=0,st=0,bs=0
     if(t<=0)jgResult('Paraules',sc,ok+' encerts · '+fail+' errors · millor ratxa '+bs,'kw',Math.min(40,Math.round(sc/8)+3),'gkwgo')},1000)};
 /* ---- 3 · Parelles ---- */
 const memSets=lv=>VOCAB.filter(t=>t.lv===lv&&t.w.length>=6);
-const openSets=()=>VOCAB.filter(t=>t.w.length>=6&&themeOpen(t.id)&&(THREF[t.id]?THREF[t.id].some(dn):dn(themeReq(t.id)[0])));
-V.g_mem=()=>{const lv=GS.ml,op=openSets().filter(t=>t.lv===lv),all=openSets();return'<h1>🃏 Parelles</h1><p class="muted">Tria un tema. Cada tema s\'obre en acabar la lliçó on el treballes.</p><div class="pills"><button class="pill '+(lv==='a1'?'on':'')+'" data-a="gml" data-v="a1">A1</button><button class="pill '+(lv==='a2'?'on':'')+'" data-a="gml" data-v="a2">A2</button></div>'+
-  '<button class="card jg-game'+(all.length?'':' jg-lock')+'" data-a="'+(all.length?'gmset':'glocked')+'" data-v="__all" data-need="Acaba alguna lliçó amb vocabulari"><span class="ic">'+(all.length?'🌍':'🔒')+'</span><span><b>General</b><small>Paraules de tots els temes que ja has treballat ('+all.length+' temes)</small></span></button><div class="jg-grid2">'+memSets(lv).map(t=>{const o=openSets().includes(t);const r=themeReq(t.id)[0];return'<button class="card jg-game'+(o?'':' jg-lock')+'" data-a="'+(o?'gmset':'glocked')+'" data-v="'+t.id+'" data-need="Acaba la '+esc(lname(r))+'" style="padding:10px 12px;margin:0"><span class="ic" style="font-size:26px">'+(o?t.ic:'🔒')+'</span><span><b style="font-size:17px">'+esc(t.ca)+'</b><small>'+t.w.length+' paraules</small></span></button>'}).join('')+'</div>'};
+const lessonSets=()=>VOCAB.filter(t=>t.w.length>=6&&themeOpen(t.id)&&(THREF[t.id]?THREF[t.id].some(dn):dn(themeReq(t.id)[0])));
+const openSets=()=>lessonSets().filter(t=>S.set.tkey||setPct(t)>=MIN_DOM);
+V.g_mem=()=>{const lv=GS.ml,op=openSets().filter(t=>t.lv===lv),all=openSets();return'<h1>🃏 Parelles</h1><p class="muted">Tria un tema. Cada tema s\'obre en acabar la lliçó on el treballes i en dominar-ne el '+MIN_DOM+' % a Vocabulari.</p><div class="pills"><button class="pill '+(lv==='a1'?'on':'')+'" data-a="gml" data-v="a1">A1</button><button class="pill '+(lv==='a2'?'on':'')+'" data-a="gml" data-v="a2">A2</button></div>'+
+  '<button class="card jg-game'+(all.length?'':' jg-lock')+'" data-a="'+(all.length?'gmset':'glocked')+'" data-v="__all" data-need="Domina el '+MIN_DOM+' % d\'almenys un tema"><span class="ic">'+(all.length?'🌍':'🔒')+'</span><span><b>General</b><small>'+(all.length?'Barreja dels teus '+all.length+' temes dominats':'Domina un tema primer')+'</small></span></button><div class="jg-grid2">'+memSets(lv).map(t=>{const o=openSets().includes(t);const r=themeReq(t.id)[0];const p=setPct(t);const les=lessonSets().includes(t);const need=les?'Domina el '+MIN_DOM+' % d\'aquest tema ('+p+' % ara)':'Acaba la '+lname(r);return'<button class="card jg-game'+(o?'':' jg-lock')+'" data-a="'+(o?'gmset':'glocked')+'" data-v="'+t.id+'" data-need="'+esc(need)+'" style="padding:10px 12px;margin:0"><span class="ic" style="font-size:26px">'+(o?t.ic:'🔒')+'</span><span><b style="font-size:17px">'+esc(t.ca)+'</b><small>'+t.w.length+' paraules · '+p+' %</small><span class="bar"><i style="width:'+p+'%"></i></span></span></button>'}).join('')+'</div>'};
 ACT.gml=v=>{GS.ml=v;showCur()};
 ACT.gmset=id=>{const w=id==='__all'?openSets().flatMap(t=>t.w):THM[id].w;GS.mem={id,ca:id==='__all'?'General':THM[id].ca,words:w.map(x=>({ca:x[0],es:x[1],em:x[2]||''}))};go('g_memmode',null,true)};
 V.g_memmode=()=>{const m=GS.mem,b=S.best;return'<h1>'+esc(m.ca)+'</h1><p class="muted">Tria com vols jugar.</p>'+gcard('gmt','⏱️','Contrarellotge','90 s: taulers de 6 parelles sense parar. Tauler complet: +20 punts i +5 s.',b['mem-'+m.id+'-t'])+gcard('gmr','🧘','Sense temps','Un tauler de 6 parelles, amb calma. Es compten els moviments.',b['mem-'+m.id+'-r'])};

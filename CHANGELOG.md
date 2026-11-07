@@ -1,5 +1,8 @@
 # Changelog · Camí Català
 
+## v9 (2026-11-07)
+- **Juegos bloqueados por dominio de Vocabulari**, como en euskera: Parelles solo abre un tema cuando lo dominas al 60 % (barra y % en cada tema; «General» se abre al dominar uno), y Contrarellotge de paraules exige además haber dominado al menos un tema. Siguen las puertas por lliçó. El código de acceso abre todo.
+
 ## v8 (2026-11-07)
 - **Fusión de las dos líneas de desarrollo.** Hasta ahora había dos v5/v6 paralelas: la de audio + consejos (v5–v7, abajo) y la de «Sobre mi» + puertas de práctica (v5b–v6b). La web había quedado con la primera y sin la segunda; esta versión las junta (el código partido en `src/` está al día).
 - **Vocabulario como en euskera**: cada tema muestra su barra y su porcentaje de dominio, más el dominio global del nivel; cada palabra tiene un nivel 0–4 que sube al acertar y baja al fallar, y cuanto menos dominas una palabra más sale. Las sesiones no repiten palabra ni significado (cuestionario de 10, tarjetas, mezcla, «Escolta i tria», práctica mixta). Las preguntas de escribir salen cuando ya dominas algo la palabra.
