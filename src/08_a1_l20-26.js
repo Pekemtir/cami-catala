@@ -159,7 +159,7 @@ c('Elige la frase correcta:','Fa tres anys que visc aquí.',['Porto tres anys vi
 c('Elige: «¿Qué hora es?»','Quina hora és?',['Què hora és?','Quant hora és?','Qui hora és?'],'Quina hora és?'),
 c('Mi madre =','la meva mare',['el meva mare','la meu mare','el meu mare'],'Concuerda con lo poseído.'),
 c('Pretérito perfecto de «menjar» (yo):','he menjat',['vaig menjar','menjava','menjaré'],'He menjat.'),
-c('«Avui ___ plogut.» (ha llovido)','ha',['va','havia','haurà'],'Perfet.'),
+c('«Avui ___ fred.» (hace frío)','fa',['és','està','té'],'Temps: fa fred.'),
 c('Elige la forma de cortesía:','Voldria un cafè.',['Vull un cafè.','Dóna\'m un cafè.','Un cafè!'],'Voldria = quisiera.'),
 t('«Jo ___ (ser) de Girona.»','sóc','Sóc.'),
 t('Tercera persona de «anar»:','va','Va.'),

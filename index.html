@@ -2469,7 +2469,7 @@ c('Elige la frase correcta:','Fa tres anys que visc aquí.',['Porto tres anys vi
 c('Elige: «¿Qué hora es?»','Quina hora és?',['Què hora és?','Quant hora és?','Qui hora és?'],'Quina hora és?'),
 c('Mi madre =','la meva mare',['el meva mare','la meu mare','el meu mare'],'Concuerda con lo poseído.'),
 c('Pretérito perfecto de «menjar» (yo):','he menjat',['vaig menjar','menjava','menjaré'],'He menjat.'),
-c('«Avui ___ plogut.» (ha llovido)','ha',['va','havia','haurà'],'Perfet.'),
+c('«Avui ___ fred.» (hace frío)','fa',['és','està','té'],'Temps: fa fred.'),
 c('Elige la forma de cortesía:','Voldria un cafè.',['Vull un cafè.','Dóna\'m un cafè.','Un cafè!'],'Voldria = quisiera.'),
 t('«Jo ___ (ser) de Girona.»','sóc','Sóc.'),
 t('Tercera persona de «anar»:','va','Va.'),
@@ -2660,7 +2660,7 @@ L(8,'a2','Pronoms febles II','Pronombres débiles II','🔗',30,
 [
 c('«___ dic la veritat.» (a ella)','Li',['La','El','Els'],'CI 3.ª sing.: li.'),
 c('«___ truco cada dia.» (a ti)','Et',['Em','Us','Li'],'CI 2.ª sing.: et.'),
-c('«___ escrivim sovint.» (a ellos)','Els',['Li','Us','Ens'],'CI 3.ª pl.: els.'),
+c('«___ parlem sovint.» (a ellos)','Els',['Li','Us','Ens'],'CI 3.ª pl.: els.'),
 c('«Em ___ bé aquest pla.» (me parece)','sembla',['semblo','semblen','semblar'],'Em sembla.'),
 c('«Veig la Laia.» → «___ veig.»','La',['Li','El','Les'],'CD: la.'),
 c('«Dic a la Laia.» → «___ dic.»','Li',['La','El','Els'],'CI: li.'),
@@ -3069,6 +3069,16 @@ for(const [id,k,t] of R){
  if(k==="e")q.e=esx(t);else if(k==="h")q.h=esx(t);else if(k==="t")q.tip=esx(t);else if(k==="p")q.p=t;else if(k==="o")q.opts=t.split(";;");}
 })();
 
+/* ===== v12.1 · auditoría «nada se pregunta antes de enseñarse»: palabras clave añadidas a lecciones que preguntan vocabulario enseñado más tarde ===== */
+(function(){const X={
+a17:[['la biblioteca','la biblioteca'],['el dinar','la comida (del mediodía)'],['preparar','preparar']],
+a19:[['el sopar','la cena'],['la compra','la compra (de comida)']],
+a112:[['de seguida','enseguida'],['de pressa','deprisa']],
+a113:[['malalt','enfermo']],
+a115:[['marxar','irse, marcharse']],
+a117:[['el gelat / els gelats','el helado / los helados']],
+a124:[['la fulla','la hoja'],['cau','cae (caer)']]};
+Object.keys(X).forEach(id=>{const l=LESSONS.find(x=>x.id===id);if(l)X[id].forEach(k=>{if(!l.kw.some(z=>z[0]===k[0]))l.kw.push(k)})})})();
 /* ===== FRASES PARA CONSTRUIR (originales) y COMPLEMENTOS PARA CLOZE ===== */
 const SENT=[];
 function SN(lv,s){s.trim().split('\n').forEach(l=>{const p=l.split('|');if(p.length<3)return;SENT.push({lv,es:p[0],t:p[1].trim().split(' '),x:p[3]?p[3].trim().split(' '):[],tip:p[2]})})}
@@ -3371,7 +3381,7 @@ function record(ok,q){SE.tot++;S.stat.tot++;if(q.key&&q.key.slice(0,2)==='w:')bu
   if(q.blk!=null){const b=SE.blk[q.blk]||(SE.blk[q.blk]={ok:0,tot:0});b.tot++;if(ok)b.ok++}
   if(ok){SE.ok++;S.stat.ok++;SE.combo++;SE.max=Math.max(SE.max,SE.combo);if(q.verb)S.stat.verb++;const x=SE.o.per!=null?SE.o.per:10;SE.xp+=x+(SE.combo>=5?2:0);
     if(q.key&&S.weak[q.key]){delete S.weak[q.key]}}
-  else{SE.combo=0;if(q.key&&!SE.o.test){S.weak[q.key]=(S.weak[q.key]||0)+1}
+  else{SE.combo=0;(SE.miss=SE.miss||[]);if(!SE.miss.some(m=>m.p===(q.p||q.es)&&m.a===q.ans))SE.miss.push({p:String(q.p||q.es||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim(),a:q.ans||'',e:q.e||q.tip||''});if(q.key&&!SE.o.test){S.weak[q.key]=(S.weak[q.key]||0)+1}
     if(!SE.o.test&&!SE.o.noRetry&&!q._r&&SE.i<SE.qs.length+3){const c=Object.assign({},q,{_r:1});SE.qs.push(c)}}
   save()}
 function finishQ(ok,q,note,given){SE.locked=true;record(ok,q);sheet(ok,q,note,given)}
@@ -3407,7 +3417,7 @@ function leaveSession(){document.body.classList.remove('in-session');try{speechS
 function endSession(){const o=SE.o;const acc=SE.tot?SE.ok/SE.tot:0;let bonus=0;
   if(!o.test&&acc>=.8)bonus=o.bonus!=null?o.bonus:15;
   addXP(SE.xp+bonus);
-  const res={acc,ok:SE.ok,tot:SE.tot,xp:SE.xp+bonus,blk:SE.blk,max:SE.max};
+  const res={acc,ok:SE.ok,tot:SE.tot,xp:SE.xp+bonus,blk:SE.blk,max:SE.max,miss:SE.miss||[]};
   if(o.onDone)o.onDone(res);
   leaveSession();
   const pct=Math.round(acc*100);
@@ -3460,10 +3470,11 @@ V.lesson=id=>{const l=LSM[id];if(LP.id!==id)LP={id,p:0};const n=l.steps.length;c
 const nextOf=id=>{const i=LESSONS.findIndex(l=>l.id===id);return LESSONS[i+1]};
 ACT.lesson=id=>{if(/^a2/.test(id)&&!a2Open()){toast('🔒 A2 bloquejat: acaba l\'A1, aprova el test d\'A1 o usa el codi');return}go('lesson',id,CUR.v!=='lesson');};
 ACT.lnext=()=>{LP.p++;showCur()};ACT.lprev=()=>{if(LP.p>0)LP.p--;showCur()};
-ACT.lpractice=()=>{const l=LSM[LP.id];const qs=shuf(l.qs.map((q,i)=>i)).map(i=>lq(l.id,i));
+ACT.lpractice=()=>{const l=LSM[LP.id];const qs=buildLessonQs(l);
   startSession(qs,{per:10,bonus:20,early:l.lv==='a1'&&l.n<=8,onDone:r=>{const sc=Math.round(r.acc*100);
-    if(r.acc>=.6){const o=S.done[l.id];S.done[l.id]={best:Math.max(o?o.best:0,sc),date:today()};if(sc===100)S.stat.perfect++;addXP(0);toast('Lliçó completada ✓')}else toast('Repassa la lliçó i torna-ho a provar');r.html=lessonRecap(l);save();checkBadges()}})};
-function lessonRecap(l){const g=(l.goals||[]).map(x=>'<li>'+esc(x)+'</li>').join('');const kw=(l.kw||[]).slice(0,8).map(k=>Array.isArray(k)?k.join(' = '):String(k)).map(esc);return '<div class="card" style="text-align:left;margin-top:14px"><b>📌 Resum de la lliçó</b>'+(g?'<ul>'+g+'</ul>':'')+(kw.length?'<p class="muted">'+kw.join(' · ')+'</p>':'')+'</div>'}
+    if(r.acc>=.6){const o=S.done[l.id];S.done[l.id]={best:Math.max(o?o.best:0,sc),date:today()};if(sc===100)S.stat.perfect++;addXP(0);toast('Lliçó completada ✓')}else toast('Repassa la lliçó i torna-ho a provar');r.html=lessonRecap(l,r.miss);save();checkBadges()}})};
+function lessonRecap(l,miss){const ms=(miss&&miss.length)?'<div class="card" style="text-align:left;margin-top:14px"><b>🔁 Repasa tus fallos</b><ul>'+miss.slice(0,10).map(m=>'<li>'+esc(m.p)+' → <b>'+esc(m.a)+'</b>'+(m.e?'<br><small class="muted">'+esc(m.e)+'</small>':'')+'</li>').join('')+'</ul></div>':'<div class="card" style="text-align:center;margin-top:14px">🎉 Sin fallos en esta práctica</div>';return ms+lessonRecap0(l)}
+function lessonRecap0(l){const g=(l.goals||[]).map(x=>'<li>'+esc(x)+'</li>').join('');const kw=(l.kw||[]).slice(0,8).map(k=>Array.isArray(k)?k.join(' = '):String(k)).map(esc);return '<div class="card" style="text-align:left;margin-top:14px"><b>📌 Resum de la lliçó</b>'+(g?'<ul>'+g+'</ul>':'')+(kw.length?'<p class="muted">'+kw.join(' · ')+'</p>':'')+'</div>'}
 ACT.lv=v=>{CUR.a=v;showCur()};
 ACT.done=()=>showCur();ACT.up=()=>up();
 ACT.tab=v=>go(v);
@@ -3536,6 +3547,66 @@ ACT.vqs=v=>{VQ.sel=v;showCur()};
 ACT.vqgo=()=>{const qs=[];while(qs.length<12){const q=verbQ(vpool()[rnd(vpool().length)],VQ.sel==='all'?null:VQ.sel);if(q)qs.push(q)}startSession(qs,{per:8})};
 ACT.voicehide=()=>{S.seen.voice=1;save();showCur()};
 
+/* ===== v2 · Práctica de lección VARIADA =====
+   Cada intento = unas 6 preguntas fijas (las escritas a mano, rotadas por historial) + unas 6 generadas
+   SOLO con lo que enseña esa lección (frases de ejemplo y palabras clave) => nada se pregunta antes de enseñarse.
+   Antimemorización: subconjunto al azar, las menos vistas/falladas primero, orden barajado sin repetir tipo seguido,
+   una frase solo una vez por intento, y memoria de lo ya generado para no repetirlo hasta agotar el banco. */
+const LANGW='catalán';
+const MIXN=12,MIXF=6;
+const clnTxt=s=>String(s||'').replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim();
+const wordsOf=t=>t.replace(/[.,;:!?¿¡«»"…]/g,'').split(/\s+/).filter(Boolean);
+const sameLen=(a,b)=>Math.abs(wordsOf(a).length-wordsOf(b).length);
+function lessonItems(l){const ex=[],seen=new Set();
+  (l.steps||[]).forEach(s=>(s.ex||[]).forEach(e=>{const t=clnTxt(e[0]),es=clnTxt(e[1]);
+    if(!t||!es||/ [–—] /.test(t)||/ [–—] /.test(es)||t.length>70||seen.has(t))return;seen.add(t);ex.push({t,es})}));
+  const kw=(l.kw||[]).map(k=>({t:clnTxt(k[0]),es:clnTxt(k[1])})).filter(k=>k.t&&k.es);
+  return{ex,kw}}
+function earlierItems(l){const ex=[],kw=[];for(const m of LESSONS){const it=lessonItems(m);ex.push(...it.ex);kw.push(...it.kw);if(m.id===l.id)break}return{ex,kw}}
+const OKTYPE=t=>/^[\p{L}\- ]+$/u.test(t)&&t.split(' ').length<=3;
+function dSent(e,c,n){const bad=x=>x.t===e.t||x.es===e.es||x.t.toLowerCase()===e.t.toLowerCase();
+  const own=new Set(c.exL.map(x=>x.t)),s=c.ex.filter(x=>!bad(x)&&own.has(x.t)),o=c.ex.filter(x=>!bad(x)&&!own.has(x.t));
+  const near=a=>a.slice().sort((p,q)=>sameLen(p.t,e.t)-sameLen(q.t,e.t)||rnd(3)-1);
+  const out=pick(near(s).slice(0,Math.max(n+2,6)),Math.min(n,s.length));
+  if(out.length<n)out.push(...pick(near(o).slice(0,8),n-out.length));return out}
+function dKw(k,c,field,n){const bad=x=>x.t===k.t||x[field]===k[field];const own=new Set(c.kwL.map(x=>x.t));
+  const u=[];for(const x of shuf(c.kw.filter(x=>!bad(x)&&own.has(x.t)))){if(!u.includes(x[field]))u.push(x[field]);if(u.length>=n)break}
+  if(u.length<n)for(const x of shuf(c.kw.filter(x=>!bad(x)&&!own.has(x.t)))){if(!u.includes(x[field])&&x[field]!==k[field])u.push(x[field]);if(u.length>=n)break}
+  return u}
+const GEN={
+ sentC:(e,c)=>{const d=dSent(e,c,3);if(d.length<3)return null;return{k:'choice',kind:'Traduce',p:'Traduce al '+LANGW+': «'+esc(e.es)+'»',ans:e.t,opts:d.map(x=>x.t),e:e.es+' = '+e.t,sayAns:1}},
+ listen:(e,c)=>{const d=dSent(e,c,3);if(d.length<3)return null;return{k:'choice',kind:'Escucha y elige',p:'Escucha y elige el significado',say:e.t,hide:1,ans:e.es,opts:d.map(x=>x.es),e:e.t+' = '+e.es}},
+ cloze:(e,c)=>{const w=e.t.split(' ');const ok=[];w.forEach((x,i)=>{const cl=x.replace(/[.,;:!?¿¡«»"…]/g,'');if(cl.length>=3&&/^[\p{L}\-]+$/u.test(cl)&&true)ok.push(i)});
+   if(w.length<3||!ok.length)return null;const i=ok[rnd(ok.length)],cl=w[i].replace(/[.,;:!?¿¡«»"…]/g,'');const m=w.slice();m[i]=w[i].replace(cl,cl[0]+'___');
+   return{k:'type',kind:'Completa la frase',p:'«'+esc(m.join(' '))+'»<br><small class="muted">'+esc(e.es)+'</small>',ans:cl,alts:[cl,cl.toLowerCase()],e:e.t+' = '+e.es,h:'Empieza por «'+cl[0]+'»',sayAns:0}},
+ build:(e,c)=>{const tok=wordsOf(e.t);if(tok.length<3||tok.length>9)return null;
+   const extra=pick([...new Set(c.ex.filter(x=>x.t!==e.t).flatMap(x=>wordsOf(x.t)).filter(w=>!tok.map(z=>z.toLowerCase()).includes(w.toLowerCase())))],2);
+   return{k:'build',kind:'Construye la frase',es:e.es,tok,extra,ans:tok.join(' '),tip:e.t}},
+ c1:(k,c)=>{const d=dKw(k,c,'es',3);if(d.length<3)return null;return{k:'choice',kind:'Vocabulario',p:'«'+esc(k.t)+'» significa…',say:k.t,ans:k.es,opts:d,e:k.t+' = '+k.es}},
+ c2:(k,c)=>{if(k.es.length<=3)return null;const d=dKw(k,c,'t',3);if(d.length<3)return null;return{k:'choice',kind:'Vocabulario',p:'¿Cómo se dice «'+esc(k.es)+'» en '+LANGW+'?',ans:k.t,opts:d,e:k.es+' = '+k.t,sayAns:1}},
+ typ:(k,c)=>{if(!OKTYPE(k.t)||k.es.length<=3)return null;return{k:'type',kind:'Escribe en '+LANGW,p:'«'+esc(k.es)+'»',ans:k.t,alts:[k.t,k.t.toLowerCase()],e:k.t+' = '+k.es,h:'Empieza por «'+k.t[0]+'»',sayAns:1}}};
+function lhOf(l){S.lh=S.lh||{};return S.lh[l.id]||(S.lh[l.id]={n:0,f:{},g:[]})}
+function genCands(l,c){const it=lessonItems(l),out=[];
+  it.ex.forEach(e=>['sentC','listen','cloze','build'].forEach(ty=>out.push({ty,item:e,id:ty+'|'+e.t,grp:'e|'+e.t})));
+  it.kw.forEach(k=>['c1','c2','typ'].forEach(ty=>out.push({ty,item:k,id:ty+'|'+k.t,grp:'k|'+k.t})));return out}
+function buildLessonQs(l){const h=lhOf(l),c=earlierItems(l),n=h.n+1;const own=lessonItems(l);c.exL=own.ex;c.kwL=own.kw;
+  // 1) fijas: las menos vistas / más falladas primero, con ruido para que no sea predecible
+  const fx=l.qs.map((q,i)=>({i,s:(h.f[i]!=null?h.f[i]:-5)+rnd(100)/50-(S.weak&&S.weak['q:'+l.id+'#'+i]?3:0)})).sort((a,b)=>a.s-b.s);
+  const cand=genCands(l,c),recent=new Set(h.g);let fresh=cand.filter(x=>!recent.has(x.id));
+  let need=MIXN-MIXF;if(cand.length<need)need=cand.length;
+  if(fresh.length<need*2){fresh=cand}   // banco corto: se permite repetir, pero barajado
+  // 2) generadas: barajar, máx. 2 por tipo y una vez cada frase/palabra por intento
+  const out=[],used=new Set(),tc={};
+  for(const x of shuf(fresh)){if(out.length>=need)break;if(used.has(x.grp)||(tc[x.ty]||0)>=2)continue;
+    const q=GEN[x.ty](x.item,c);if(!q)continue;q.gid=x.id;out.push(q);used.add(x.grp);tc[x.ty]=(tc[x.ty]||0)+1}
+  if(out.length<need){for(const x of shuf(fresh)){if(out.length>=need)break;if(used.has(x.grp))continue;const q=GEN[x.ty](x.item,c);if(!q)continue;q.gid=x.id;out.push(q);used.add(x.grp)}}
+  const nf=Math.min(l.qs.length,MIXN-out.length);
+  const fixed=fx.slice(0,nf).map(o=>{h.f[o.i]=n;return lq(l.id,o.i)});
+  out.forEach(q=>{h.g.push(q.gid)});h.g=h.g.slice(-40);h.n=n;
+  // 3) orden barajado evitando dos del mismo tipo seguidas
+  let all=shuf(fixed.concat(out));
+  for(let i=1;i<all.length;i++){if(all[i].k===all[i-1].k&&all[i].kind===all[i-1].kind){for(let j=i+1;j<all.length;j++){if(all[j].kind!==all[i-1].kind){[all[i],all[j]]=[all[j],all[i]];break}}}}
+  save();return all}
 /* ===== JUEGOS (estilo sala de juegos: Contrarellotge, Parelles, Pluja de verbs) ===== */
 const JG={t:null,r:null,live:false,stop(){if(this.t){clearInterval(this.t);this.t=null}if(this.r){cancelAnimationFrame(this.r);this.r=null}this.live=false}};
 const one=a=>a[rnd(a.length)];
@@ -3774,6 +3845,31 @@ ACT.blur=()=>{S.set.blur=S.set.blur===false;save();showCur()};
 const blr=l=>l.lv==='a2'&&l.n>=8&&S.set.blur!==false;
 const blrSub=l=>l.lv==='a2'&&l.n>=16&&S.set.blur!==false;
 const esSub=(l,tap)=>blrSub(l)?'<span class="blur"'+(tap?' data-a="unblur" role="button" title="Toca para ver la traducción"':'')+'>'+esc(l.es)+'</span>':esc(l.es);
+/* ===== MODO SILENCIO =====
+   Botón 🔊/🔇 en la barra superior y dentro de cada sesión (+ ajuste «Voz» en Me → Settings).
+   Con el silencio activado: no suena nada, se ocultan los botones 🔊/🐢 y NO salen ejercicios que necesiten sonido:
+   «Escucha y elige» se convierte en lectura («X» significa…) y los dictados/deletreos se omiten. */
+const MUTED=()=>!(S.set&&S.set.voice);
+const AUDKINDS=['Dictado de números','Deletreo','Dictat de números','Lletrejar'];
+function silenceQs(qs){qs=qs.filter(Boolean);if(!MUTED())return qs;
+  return qs.map(q=>{
+    if(AUDKINDS.includes(q.kind))return null;
+    if(q.hide&&q.k==='choice'&&q.say)return Object.assign({},q,{hide:0,say:'',kind:'Vocabulario',p:'«'+esc(q.say)+'» significa…'});
+    if(q.hide)return null;
+    return q}).filter(Boolean)}
+const _ss0=startSession;
+startSession=function(qs,o){qs=silenceQs(qs);if(!qs.length){toast('🔇 Este ejercicio necesita sonido: pulsa 🔇 para activarlo');return}return _ss0(qs,o)};
+const _qh0=qHead;
+qHead=function(q){return _qh0(q).replace('<div class="combo">','<button class="x" data-a="mute" aria-label="Sonido">'+(MUTED()?'🔇':'🔊')+'</button><div class="combo">')};
+function applyMute(){try{document.body.classList.toggle('muted',MUTED());
+  document.querySelectorAll('[data-a="mute"]').forEach(b=>{b.textContent=MUTED()?'🔇':'🔊';b.setAttribute('aria-pressed',MUTED()?'true':'false')})}catch(e){}}
+ACT.mute=()=>{S.set.voice=!S.set.voice;if(!S.set.voice){try{speechSynthesis.cancel()}catch(e){}}save();applyMute();
+  toast(MUTED()?'🔇 Silencio: sin sonido ni ejercicios de escucha':'🔊 Sonido activado');if(CUR&&CUR.v==='me')showCur()};
+const _v0=ACT.voice;ACT.voice=()=>{_v0();applyMute()};
+(function(){const st=document.createElement('style');
+  st.textContent='body.muted .spk{display:none!important}#mutebtn{margin-left:auto;flex:none}';document.head.appendChild(st);
+  const ch=document.getElementById('chips');if(ch&&ch.parentNode){const b=document.createElement('button');b.id='mutebtn';b.className='x';b.setAttribute('data-a','mute');b.setAttribute('aria-label','Sonido');ch.parentNode.insertBefore(b,ch)}
+  applyMute()})();
 /* ===== ARRANQUE ===== */
 document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t)return;const f=ACT[t.dataset.a];if(f){if(t.tagName!=='INPUT')e.preventDefault();f(t.dataset.v,t)}});
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>go(t.dataset.v)));

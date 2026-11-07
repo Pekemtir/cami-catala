@@ -180,7 +180,7 @@ L(8,'a2','Pronoms febles II','Pronombres débiles II','🔗',30,
 [
 c('«___ dic la veritat.» (a ella)','Li',['La','El','Els'],'CI 3.ª sing.: li.'),
 c('«___ truco cada dia.» (a ti)','Et',['Em','Us','Li'],'CI 2.ª sing.: et.'),
-c('«___ escrivim sovint.» (a ellos)','Els',['Li','Us','Ens'],'CI 3.ª pl.: els.'),
+c('«___ parlem sovint.» (a ellos)','Els',['Li','Us','Ens'],'CI 3.ª pl.: els.'),
 c('«Em ___ bé aquest pla.» (me parece)','sembla',['semblo','semblen','semblar'],'Em sembla.'),
 c('«Veig la Laia.» → «___ veig.»','La',['Li','El','Les'],'CD: la.'),
 c('«Dic a la Laia.» → «___ dic.»','Li',['La','El','Els'],'CI: li.'),

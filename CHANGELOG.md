@@ -1,5 +1,18 @@
 # Changelog · Camí Català
 
+## v13 (2026-11-08)
+- **Práctica de lección variada** (`src/16b_leccion_mix.js`, `buildLessonQs(l)`): cada intento = 6 preguntas fijas (las 13 escritas a mano, rotadas: primero las menos vistas y las falladas, con ruido al azar) + 6 generadas SOLO con lo que enseña esa lección (frases de ejemplo `ex` y palabras clave `kw`) ⇒ nada se pregunta antes de enseñarse. Generadas: traducir frase (4 opciones), escuchar y elegir significado, completar frase (primera letra + hueco), construir frase, vocabulario en ambos sentidos y escribir la palabra. Distractores: primero de la propia lección, luego de las anteriores.
+- **Antimemorización / imprevisible:** subconjunto distinto cada vez, orden barajado sin dos tipos iguales seguidos, una frase o palabra solo una vez por intento, máx. 2 de cada tipo generado, memoria por lección en `S.lh` (últimas 40 generadas y último intento de cada fija) para no repetir hasta agotar el banco, opciones barajadas al mostrarse.
+- **Medido (8 intentos seguidos, 50 lecciones, simulado en node):** 6 fijas + 6 generadas por intento; solo ~5-6 % de preguntas se repiten entre intentos seguidos (antes 100 %); ~60 preguntas distintas por lección en 8 intentos (antes 13); 0 problemas (opciones sin la correcta, duplicados, respuestas fuera de lo enseñado); 450-520 respuestas escritas generadas, todas aceptadas por `checkType`.
+- Probado con `English/tests/t_mix.js`, `t_mix_check.js`, `t_mix_sample.js` (cargan la app en node con DOM simulado: `build_debug2.py <src> <html>` y `APP=<html> node t_mix.js`). NO probado en navegador real.
+- También: «🔁 Repasa tus fallos» al final de la práctica de lección (igual que en inglés v1.3).
+
+## v12.1 (2026-11-08) · auditoría «nada se pregunta antes de enseñarse»
+- Auditadas las 50 lecciones con `English/tests/audit_taught.js` (`SRC=…/Catala/src node dump_lessons.js` y luego `audit_taught.js`). Nuevo `src/12a_kw_extra.js` (después de 11 en `orden.txt`) añade palabras clave a lecciones que preguntaban vocabulario enseñado más tarde: L17 biblioteca/dinar/preparar, L19 sopar/compra, L112 de seguida/de pressa, L113 malalt, L115 marxar, L117 gelats, A2 A1 L24 fulla/cau.
+- Ejercicios cambiados: A1 L26 «Avui ha plogut» (perfecto no enseñado) → «Avui fa fred»; A2 L8 (a28) «escrivim» (no enseñado) → «parlem».
+- Falsos positivos aceptados: formas verbales regulares/irregulares cuya regla o raíz sí se enseña (cuinen, pagues, vindrà, vingueu…).
+- Probado: build desde src reproduce el HTML previo, sintaxis JS correcta. NO probado en navegador. NO subido a GitHub.
+
 ## v12 (2026-11-07)
 - **Ayuda 💡 progresiva**: cada toque da más pista en las preguntas de escribir. 1.º la ayuda de siempre; 2.º «Empieza por "a"» + nº de palabras y letras; 3.º máscara con la primera letra de cada palabra (a _ _ _ _); en las lliçons 1–8 de A1 hay un 4.º toque con la mitad de las letras. Aviso «Toca 💡 otra vez para ver más» mientras queden niveles.
 
@@ -63,3 +76,6 @@
 - Práctica: repaso de palabras flojas, reto diario, constructor de frases, números, deletreo, escucha y elige.
 - Juegos: Contrarellotge, Parelles, Cursa de verbs. Test de nivel A1/A2 y autoevaluación.
 - XP, rachas, insignias, copia de seguridad, tema Pissarra/Paper, pantalla legal y de créditos.
+
+## v14 (2026-11-08) — Modo silencio
+- Igual que English v1.5 (`src/20c_silencio.js`).

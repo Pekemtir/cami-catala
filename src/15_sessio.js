@@ -34,7 +34,7 @@ function record(ok,q){SE.tot++;S.stat.tot++;if(q.key&&q.key.slice(0,2)==='w:')bu
   if(q.blk!=null){const b=SE.blk[q.blk]||(SE.blk[q.blk]={ok:0,tot:0});b.tot++;if(ok)b.ok++}
   if(ok){SE.ok++;S.stat.ok++;SE.combo++;SE.max=Math.max(SE.max,SE.combo);if(q.verb)S.stat.verb++;const x=SE.o.per!=null?SE.o.per:10;SE.xp+=x+(SE.combo>=5?2:0);
     if(q.key&&S.weak[q.key]){delete S.weak[q.key]}}
-  else{SE.combo=0;if(q.key&&!SE.o.test){S.weak[q.key]=(S.weak[q.key]||0)+1}
+  else{SE.combo=0;(SE.miss=SE.miss||[]);if(!SE.miss.some(m=>m.p===(q.p||q.es)&&m.a===q.ans))SE.miss.push({p:String(q.p||q.es||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim(),a:q.ans||'',e:q.e||q.tip||''});if(q.key&&!SE.o.test){S.weak[q.key]=(S.weak[q.key]||0)+1}
     if(!SE.o.test&&!SE.o.noRetry&&!q._r&&SE.i<SE.qs.length+3){const c=Object.assign({},q,{_r:1});SE.qs.push(c)}}
   save()}
 function finishQ(ok,q,note,given){SE.locked=true;record(ok,q);sheet(ok,q,note,given)}
@@ -70,7 +70,7 @@ function leaveSession(){document.body.classList.remove('in-session');try{speechS
 function endSession(){const o=SE.o;const acc=SE.tot?SE.ok/SE.tot:0;let bonus=0;
   if(!o.test&&acc>=.8)bonus=o.bonus!=null?o.bonus:15;
   addXP(SE.xp+bonus);
-  const res={acc,ok:SE.ok,tot:SE.tot,xp:SE.xp+bonus,blk:SE.blk,max:SE.max};
+  const res={acc,ok:SE.ok,tot:SE.tot,xp:SE.xp+bonus,blk:SE.blk,max:SE.max,miss:SE.miss||[]};
   if(o.onDone)o.onDone(res);
   leaveSession();
   const pct=Math.round(acc*100);
