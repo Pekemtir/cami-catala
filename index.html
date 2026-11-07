@@ -61,6 +61,7 @@ body.in-session .tabs,body.sub .tabs{display:none}
 .tw{overflow-x:auto;margin:8px 0}
 .ex{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line)}.ex:last-child{border:0}.ex b{font:400 21px var(--f-d)}
 .spk{border:2px solid var(--line);background:var(--surface2);border-radius:50%;width:38px;height:38px;flex:none;font-size:17px;line-height:1;padding:0}
+.blur{filter:blur(6px);cursor:pointer;transition:filter .2s}.blur.on{filter:none}
 .tip{background:var(--bg2);border-left:5px solid var(--yel);border-radius:8px;padding:10px 12px;margin:10px 0}
 .goal{display:flex;align-items:center;gap:14px}
 .qtop{display:flex;align-items:center;gap:12px;padding:max(12px,env(safe-area-inset-top)) 0 14px}
@@ -3258,7 +3259,7 @@ function lq(lid,i){const l=LSM[lid];const q=l.qs[i];const o=Object.assign({},q,{
   if(q.k==='choice'){o.opts=q.opts.slice()}
   if(q.k==='build'){o.k='build';o.ans=q.tok.join(' ')}return o}
 function formOf(inf,tense,p){const v=VERBS[inf];const f=v&&v.T[tense]?v.T[tense][p]:null;return f}
-function verbQ(inf,tense,p){const v=VERBS[inf];const t=tense||TENSES[rnd(8)];const n=t==='imper'?5:6;
+function verbQ(inf,tense,p){const v=VERBS[inf];const t=tense||(()=>{const u=unlockedT();return u.length?u[rnd(u.length)]:'pres'})();const n=t==='imper'?5:6;
   let tries=0;while(tries++<20){const pp=(p==null||tries>1)?rnd(n):p;const f=formOf(inf,t,pp);if(!f||/undefined|null/.test(f))continue;
     const subj=t==='imper'?'('+IMPER_P[pp]+')':PRON_S[pp];const comp=VC[inf]||'';
     const pre=t==='subj'?'Vull que ':t==='cond'?'Si pogués, ':'';
@@ -3270,7 +3271,7 @@ function verbQ(inf,tense,p){const v=VERBS[inf];const t=tense||TENSES[rnd(8)];con
     return{k:'type',kind:'Conjugació · '+name,p:esc(sentence.trim()),ans:f,alts:[f],e:VT_NAMES[t][2]+'. '+inf+' → '+f,h:'Tiempo: '+name,key,verb:1}}
   return null}
 const VLIST=Object.keys(VERBS);
-function sentQ(lv){const p=SENT.filter(s=>!lv||s.lv===lv);const s=p[rnd(p.length)];const ex=s.x.length?s.x:pick(SENT.filter(z=>z!==s).flatMap(z=>z.t).filter(w=>!s.t.includes(w)),2);
+function sentQ(lv){const p=SENT.filter(s=>(!lv||s.lv===lv)&&(s.lv==='a1'||a2Any()));const s=p[rnd(p.length)];const ex=s.x.length?s.x:pick(SENT.filter(z=>z!==s).flatMap(z=>z.t).filter(w=>!s.t.includes(w)),2);
   return{k:'build',kind:'Construeix la frase',es:s.es,tok:s.t,extra:[...new Set(ex)].slice(0,2),ans:s.t.join(' '),tip:s.tip,key:'s:'+SENT.indexOf(s)}}
 function numQ(max){const n=rnd(max||100)+(rnd(3)?0:0);
   if(rnd(2))return{k:'type',kind:'Dictat de números',p:'Escolta i escriu el número (xifres)',say:catNum(n),ans:String(n),alts:[String(n)],e:n+' = '+catNum(n),hide:1};
@@ -3288,8 +3289,8 @@ function sentQ2(s){const ex=s.x.length?s.x:pick(SENT.filter(z=>z!==s).flatMap(z=
 function mixQ(n){const out=[];const doneL=Object.keys(S.done);const lids=doneL.length?doneL:LESSONS.filter(l=>l.lv==='a1').slice(0,6).map(l=>l.id);
   while(out.length<n){const r=rnd(10);let q=null;
     if(r<4){const l=LSM[lids[rnd(lids.length)]];q=lq(l.id,rnd(l.qs.length))}
-    else if(r<7)q=vq(WORDS[rnd(WORDS.length)]);
-    else if(r<9)q=verbQ(VLIST[rnd(VLIST.length)]);
+    else if(r<7){const sp=seenPool();q=vq(sp[rnd(sp.length)])}
+    else if(r<9){const vp=vpool();q=verbQ(vp[rnd(vp.length)])}
     else q=sentQ(rnd(2)?'a1':null);
     if(q)out.push(q)}return out}
 /* ===== SESIÓN DE PREGUNTAS ===== */
@@ -3399,8 +3400,8 @@ V.lessons=()=>{const lv=CUR.a||'a1';
 let LP={id:'',p:0};
 V.lesson=id=>{const l=LSM[id];if(LP.id!==id)LP={id,p:0};const n=l.steps.length;const p=LP.p;let h='<div class="muted">'+l.lv.toUpperCase()+' · lliçó '+l.n+'</div><h1>'+l.ic+' '+esc(l.ca)+'</h1><div class="muted">'+esc(l.es)+'</div><div class="bar"><i style="width:'+Math.round(p/(n+2)*100)+'%"></i></div>';
   if(p===0){h+='<h2>Què aprendràs</h2><div class="card"><ul style="margin:0;padding-left:20px">'+l.goals.map(g=>'<li>'+esc(g)+'</li>').join('')+'</ul></div><p class="muted">'+n+' passos · '+l.qs.length+' preguntes · ~'+l.min+' min</p>'}
-  else if(p<=n){const s=l.steps[p-1];h+='<h2>'+p+'. '+esc(s.t)+'</h2><div class="card">'+s.h+(s.tb?'<div class="tw">'+s.tb+'</div>':'')+(s.ex.length?'<div>'+s.ex.map(e=>'<div class="ex">'+spk(e[0])+'<div><b>'+esc(e[0])+'</b><div class="muted">'+esc(e[1])+'</div></div></div>').join('')+'</div>':'')+(s.tip?'<div class="tip">💡 '+s.tip+'</div>':'')+'</div>'}
-  else if(p===n+1){h+='<h2>Paraules clau</h2><div class="card">'+l.kw.map(k=>'<div class="hit">'+spk(k[0])+'<b>'+esc(k[0])+'</b><span class="es">'+esc(k[1])+'</span></div>').join('')+'</div>'+(l.th.length?'<div class="row">'+l.th.map(t=>'<button class="btn sec sm" data-a="theme" data-v="'+t+'">'+THM[t].ic+' '+esc(THM[t].ca)+'</button>').join('')+'</div>':'')}
+  else if(p<=n){const s=l.steps[p-1];h+='<h2>'+p+'. '+esc(s.t)+'</h2><div class="card">'+s.h+(s.tb?'<div class="tw">'+s.tb+'</div>':'')+(s.ex.length?'<div>'+s.ex.map(e=>'<div class="ex">'+spk(e[0])+'<div><b>'+esc(e[0])+'</b><div class="muted'+(blr(l)?' blur" data-a="unblur" role="button" title="Toca para ver la traducción':'')+'">'+esc(e[1])+'</div></div></div>').join('')+'</div>':'')+(s.tip?'<div class="tip">💡 '+s.tip+'</div>':'')+'</div>'}
+  else if(p===n+1){h+='<h2>Paraules clau</h2><div class="card">'+l.kw.map(k=>'<div class="hit">'+spk(k[0])+'<b>'+esc(k[0])+'</b><span class="es'+(blr(l)?' blur" data-a="unblur" role="button':'')+'">'+esc(k[1])+'</span></div>').join('')+'</div>'+(l.th.length?'<div class="row">'+l.th.map(t=>'<button class="btn sec sm" data-a="theme" data-v="'+t+'">'+THM[t].ic+' '+esc(THM[t].ca)+'</button>').join('')+'</div>':'')}
   else{const d=S.done[id];h+='<h2>Practica</h2><div class="card" style="text-align:center"><div class="big">'+(d?'✅':'✏️')+'</div><p>'+l.qs.length+' preguntes sobre aquesta lliçó.'+(d?'<br>Millor resultat: <b>'+d.best+'%</b>':'')+'</p><button class="btn block" data-a="lpractice">'+(d?'Torna-ho a provar':'Comença')+'</button></div>'+(d?(nextOf(id)?'<button class="btn sec block" data-a="lesson" data-v="'+nextOf(id).id+'">Següent lliçó ▶</button>':''):'')}
   h+='<div class="row" style="margin-top:16px"><button class="btn sec grow" data-a="lprev"'+(p===0?' disabled':'')+'>◀ Enrere</button>'+(p<n+2?'<button class="btn grow" data-a="lnext">'+(p===n+1?'Practica ▶':'Següent ▶')+'</button>':'')+'</div>';return h};
 const nextOf=id=>{const i=LESSONS.findIndex(l=>l.id===id);return LESSONS[i+1]};
@@ -3419,16 +3420,16 @@ V.practice=()=>{const wk=Object.keys(S.weak).length;
   return'<h1>Pràctica</h1><p class="muted">Tria com vols entrenar.</p><div class="tiles">'+
   T('weak','🔁','Paraules fluixes',wk+' per repassar')+T('daily','📅','Repte quotidià','10 preguntes')+T('themes','🗂️','Vocabulari','54 temes')+T('sentq','🧩','Constructor de frases','Ordena paraules')+
   T('vquiz','🔧','Quiz de verbs','Conjugació')+T('numq','🔢','Números','Dictat i escriptura')+T('spellq','🔤','Lletrejar','Escolta les lletres')+T('listenq','🎧','Escolta i tria','Comprensió oral')+
-  T('games','🎮','Jocs','4 jocs')+T('tests','🧪','Test de nivell','A1 i A2')+T('self','✅','Autoavaluació','Què sé fer?')+'</div>'};
+  T('genq','✨','Frases noves','Generador de frases')+T('meq','👤','Sobre mi',S.me?'Frases amb les teves dades':'Explica\'ns de tu')+T('games','🎮','Jocs','4 jocs')+T('tests','🧪','Test de nivell','A1 i A2')+T('self','✅','Autoavaluació','Què sé fer?')+'</div>'};
 ACT.weak=()=>{const ks=shuf(Object.keys(S.weak)).slice(0,15);const qs=ks.map(keyToQ).filter(Boolean);
   if(!qs.length){toast('No tens res per repassar. Bona feina!');return}startSession(qs,{per:8,bonus:10})};
 ACT.daily=()=>{const first=!S.seen['dc'+today()];startSession(mixQ(10),{per:8,bonus:first?30:10,onDone:r=>{if(r.acc>=.6){S.seen['dc'+today()]=1;save()}}})};
 ACT.sentq=()=>startSession(Array.from({length:10},()=>sentQ(rnd(3)?null:'a1')),{per:8});
 ACT.numq=()=>startSession(Array.from({length:10},()=>numQ(rnd(3)?100:1000)),{per:8});
 ACT.spellq=()=>startSession(Array.from({length:8},spellQ),{per:10});
-ACT.listenq=()=>startSession(pick(WORDS,10).map(w=>vq(w,'l')),{per:6});
+ACT.listenq=()=>startSession(pick(seenPool(),10).map(w=>vq(w,'l')),{per:6});
 ACT.themes=()=>go('themes',null,true);ACT.games=()=>go('games',null,true);ACT.tests=()=>go('tests',null,true);ACT.self=()=>go('self',null,true);ACT.vquiz=()=>go('vquiz',null,true);
-V.themes=()=>{const lv=CUR.a||'a1';return'<h1>Vocabulari</h1><div class="pills"><button class="pill '+(lv==='a1'?'on':'')+'" data-a="tlv" data-v="a1">A1</button><button class="pill '+(lv==='a2'?'on':'')+'" data-a="tlv" data-v="a2">A2</button></div>'+VOCAB.filter(t=>t.lv===lv).map(t=>'<button class="lrow" data-a="theme" data-v="'+t.id+'"><span class="ic">'+t.ic+'</span><span class="grow"><b>'+esc(t.ca)+'</b><small>'+esc(t.es)+' · '+t.w.length+' paraules</small></span></button>').join('')};
+V.themes=()=>{const lv=CUR.a||'a1';return'<h1>Vocabulari</h1><div class="pills"><button class="pill '+(lv==='a1'?'on':'')+'" data-a="tlv" data-v="a1">A1</button><button class="pill '+(lv==='a2'?'on':'')+'" data-a="tlv" data-v="a2">A2</button></div>'+VOCAB.filter(t=>t.lv===lv).map(t=>{const op=themeOpen(t.id);return '<button class="lrow'+(op?'':' jg-lock')+'" data-a="'+(op?'theme':'glocked')+'" data-need="Acaba la lliçó on es treballa aquest tema" data-v="'+t.id+'"><span class="ic">'+(op?t.ic:'🔒')+'</span><span class="grow"><b>'+esc(t.ca)+'</b><small>'+esc(t.es)+' · '+t.w.length+' paraules</small></span></button>'}).join('')};
 ACT.tlv=v=>{CUR.a=v;showCur()};
 ACT.theme=id=>go('theme',id,true);
 V.theme=id=>{const t=THM[id];return'<h1>'+t.ic+' '+esc(t.ca)+'</h1><div class="muted">'+esc(t.es)+' · '+t.w.length+' paraules</div><div class="row" style="margin:12px 0"><button class="btn" data-a="tflash" data-v="'+id+'">🗂️ Targetes</button><button class="btn sec" data-a="tquiz" data-v="'+id+'">❓ Qüestionari</button></div><div class="card">'+t.w.map(w=>'<div class="hit">'+spk(w[0])+'<span style="font-size:22px">'+(w[2]||'')+'</span><b>'+esc(w[0])+'</b><span class="es">'+esc(w[1])+'</span></div>').join('')+'</div>'};
@@ -3463,7 +3464,7 @@ ACT.vpractice=inf=>{const qs=[];for(let i=0;i<12;i++)qs.push(verbQ(inf,VT.t==='i
 let VQ={sel:'all'};
 V.vquiz=()=>'<h1>Quiz de verbs</h1><p class="muted">Completa la forma verbal correcta. Tria el temps.</p><div class="pills"><button class="pill '+(VQ.sel==='all'?'on':'')+'" data-a="vqs" data-v="all">Tots</button>'+TENSES.map(t=>'<button class="pill '+(VQ.sel===t?'on':'')+'" data-a="vqs" data-v="'+t+'">'+VT_NAMES[t][0]+'</button>').join('')+'</div><button class="btn block" data-a="vqgo">Comença (12 preguntes)</button>';
 ACT.vqs=v=>{VQ.sel=v;showCur()};
-ACT.vqgo=()=>{const qs=[];while(qs.length<12){const q=verbQ(VLIST[rnd(VLIST.length)],VQ.sel==='all'?null:VQ.sel);if(q)qs.push(q)}startSession(qs,{per:8})};
+ACT.vqgo=()=>{const qs=[];while(qs.length<12){const q=verbQ(vpool()[rnd(vpool().length)],VQ.sel==='all'?null:VQ.sel);if(q)qs.push(q)}startSession(qs,{per:8})};
 
 /* ===== JUEGOS (estilo sala de juegos: Contrarellotge, Parelles, Pluja de verbs) ===== */
 const JG={t:null,r:null,live:false,stop(){if(this.t){clearInterval(this.t);this.t=null}if(this.r){cancelAnimationFrame(this.r);this.r=null}this.live=false}};
@@ -3626,7 +3627,7 @@ ACT.selfck=(v,el)=>{if(el.checked)S.self[v]=1;else delete S.self[v];save();showC
 V.me=()=>{const acc=pct(S.stat.ok,S.stat.tot);
   let h='<h1>Jo</h1><div class="tiles"><div class="card"><small class="muted">XP total</small><div style="font:400 30px var(--f-d)">⭐ '+S.xp+'</div></div><div class="card"><small class="muted">Ratxa</small><div style="font:400 30px var(--f-d)">🔥 '+streakNow()+'</div></div><div class="card"><small class="muted">Encerts</small><div style="font:400 30px var(--f-d)">'+acc+'%</div></div></div>';
   h+='<h2>Insígnies</h2><div class="badges">'+BADGES.map(b=>'<div class="badge'+(S.badges[b[0]]?'':' off')+'" title="'+esc(b[3])+'">'+b[1]+' <b>'+esc(b[2])+'</b></div>').join('')+'</div>';
-  h+='<h2>Ajustos</h2><div class="card"><b>Objectiu diari</b><div class="pills">'+[10,30,50,100].map(g=>'<button class="pill '+(S.goal===g?'on':'')+'" data-a="goal" data-v="'+g+'">'+g+' XP</button>').join('')+'</div><b>Aspecte</b><div class="pills">'+[['auto','Automàtic'],['dark','Pissarra'],['light','Paper']].map(x=>'<button class="pill '+(S.set.theme===x[0]?'on':'')+'" data-a="theme_set" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</div><b>Veu</b><div class="pills"><button class="pill '+(S.set.voice?'on':'')+'" data-a="voice">'+(S.set.voice?'🔊 Activada':'🔇 Silenciada')+'</button></div>'+'<b>Codi d\'accés</b><p class="muted">Per a professorat o per provar l\'app: obre tots els jocs sense acabar les lliçons.</p>'+(S.set.tkey?'<p class="ok">Accés especial actiu.</p><button class="btn sec small" data-a="tcodeoff">Desactiva</button>':'<div class="row"><input id="tc" class="grow" type="text" placeholder="Codi" autocomplete="off" autocapitalize="off" spellcheck="false" style="min-width:0;padding:10px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--ink)"><button class="btn sec small" data-a="tcode">Entra</button></div>')+(CAV?'':'<p class="muted">Aquest dispositiu no té veu catalana instal·lada; la pronunciació pot ser aproximada.</p>')+'</div>';
+  h+='<h2>Ajustos</h2><div class="card"><b>Objectiu diari</b><div class="pills">'+[10,30,50,100].map(g=>'<button class="pill '+(S.goal===g?'on':'')+'" data-a="goal" data-v="'+g+'">'+g+' XP</button>').join('')+'</div><b>Aspecte</b><div class="pills">'+[['auto','Automàtic'],['dark','Pissarra'],['light','Paper']].map(x=>'<button class="pill '+(S.set.theme===x[0]?'on':'')+'" data-a="theme_set" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</div><b>Veu</b><div class="pills"><button class="pill '+(S.set.voice?'on':'')+'" data-a="voice">'+(S.set.voice?'🔊 Activada':'🔇 Silenciada')+'</button></div>'+'<b>Nivell A2</b><div class="pills"><button class="pill '+(S.set.blur!==false?'on':'')+'" data-a="blur">'+(S.set.blur!==false?'Traducció difuminada':'Traducció visible')+'</button></div><b>Les meves dades</b><div class="pills"><button class="pill" data-a="meedit">👤 Edita «Sobre mi»</button></div><b>Codi d\'accés</b><p class="muted">Per a professorat o per provar l\'app: obre tots els jocs sense acabar les lliçons.</p>'+(S.set.tkey?'<p class="ok">Accés especial actiu.</p><button class="btn sec small" data-a="tcodeoff">Desactiva</button>':'<div class="row"><input id="tc" class="grow" type="text" placeholder="Codi" autocomplete="off" autocapitalize="off" spellcheck="false" style="min-width:0;padding:10px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--ink)"><button class="btn sec small" data-a="tcode">Entra</button></div>')+(CAV?'':'<p class="muted">Aquest dispositiu no té veu catalana instal·lada; la pronunciació pot ser aproximada.</p>')+'</div>';
   h+='<h2>Més</h2><div class="tiles"><button class="tile" data-a="tests"><span class="ic">🧪</span><span class="t">Test de nivell</span><span class="s">A1 i A2</span></button><button class="tile" data-a="self"><span class="ic">✅</span><span class="t">Autoavaluació</span><span class="s">Què sé fer?</span></button><button class="tile" data-a="backup"><span class="ic">💾</span><span class="t">Còpia de seguretat</span><span class="s">Exporta / importa</span></button><button class="tile" data-a="legal"><span class="ic">⚖️</span><span class="t">Crèdits i legal</span><span class="s">Llicències</span></button></div>';
   h+='<h2>Reinicia</h2><button class="btn sec" id="rst" data-a="reset">Esborra el progrés</button>';return h};
 const h32=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)};
@@ -3641,6 +3642,55 @@ ACT.copy=()=>{const t=$('#bx');t.select();try{navigator.clipboard.writeText(t.va
 ACT.import=()=>{const m=$('#bm');try{let v=$('#bi').value.trim();if(!v.startsWith('CAMI1:'))throw 0;const o=JSON.parse(decodeURIComponent(escape(atob(v.slice(6)))));if(typeof o.xp!=='number'||typeof o.done!=='object')throw 0;S=Object.assign({},JSON.parse(JSON.stringify(DEF)),o);save();load0();m.innerHTML='<p class="ok">Progrés importat correctament.</p>'}catch(e){m.innerHTML='<p class="err">Codi no vàlid.</p>'}};
 function load0(){['done','weak','badges','tests','self','best','seen'].forEach(k=>{if(!S[k]||typeof S[k]!=='object')S[k]={}});S.stat=Object.assign({ok:0,tot:0,verb:0,games:0,perfect:0},S.stat);S.set=Object.assign({voice:true,theme:'auto'},S.set);S.day=S.day||{d:'',xp:0};applyTheme()}
 V.legal=()=>'<h1>Crèdits i legal</h1><div class="legal"><div class="card"><h3>Contingut original</h3><p>Totes les lliçons, explicacions, exemples, exercicis, frases, llistes de vocabulari i entrades del diccionari d\'aquesta aplicació són <b>text original</b> escrit per a aquest curs. No s\'ha copiat ni traduït cap manual, llibre de text, examen ni diccionari. Les paraules i les regles gramaticals de la llengua són de domini comú; només hi ha expressió pròpia.</p></div><div class="card"><h3>Llicències</h3><ul><li><b>Codi</b>: llicència MIT.</li><li><b>Continguts del curs</b> (textos, exercicis, vocabulari): Creative Commons Reconeixement-NoComercial 4.0 Internacional (CC BY-NC 4.0). Pots compartir-los i adaptar-los citant l\'autoria i sense ús comercial.</li><li><b>Tipus de lletra</b> Patrick Hand i Nunito, incrustades, sota la SIL Open Font License 1.1.</li></ul></div><div class="card"><h3>Fonts de referència</h3><p>El temari s\'ha contrastat amb les descripcions públiques de nivells i programacions de l\'ensenyament de català per a adults (Consorci per a la Normalització Lingüística, Servei de Llengües de la UAB, Generalitat de Catalunya i el Marc europeu comú de referència). Només s\'han consultat com a referència de continguts; no s\'hi ha reutilitzat cap text.</p></div><div class="card"><h3>Sense afiliació</h3><p>Aquesta aplicació és un projecte independent i <b>no està afiliada ni avalada</b> per cap d\'aquestes entitats. No és un curs oficial ni emet certificats. Per obtenir un certificat oficial, consulta la convocatòria vigent de l\'organisme corresponent. Els noms d\'entitats es citen només per identificar-les.</p></div><div class="card"><h3>Privacitat</h3><p>L\'app funciona al teu dispositiu. No té comptes, ni anuncis, ni rastrejadors, ni cookies. El progrés es desa al teu navegador (localStorage) i no s\'envia enlloc. La veu utilitza la síntesi de veu del teu dispositiu.</p></div><div class="card"><h3>Avís</h3><p>Material educatiu «tal com és», sense garanties. Pot contenir errors; si en trobes algun, ens ajudaràs a millorar-lo.</p></div></div>';
+
+/* ===== v6: Sobre mi, generador de frases, A2 difuminado, puerta de práctica ===== */
+const seenPool=()=>{const s=seenWords();if(s.length>=8)return s;const f=WORDS.filter(w=>(LSM.a11?LSM.a11.th:[]).includes(w.th));return f.length>=8?f:WORDS.filter(w=>w.lv==='a1')};
+const vpool=()=>{const p=VPOOL();return p.length?p:['ser','tenir'].filter(x=>VERBS[x])};
+const a2Any=()=>!!(S.set.tkey||Object.keys(S.done).some(id=>LSM[id]&&LSM[id].lv==='a2'));
+/* Sobre mi */
+const isVow=s=>/^[aeiouhàèéíòóúAEIOUH]/.test(s);
+function meQs(){const m=S.me||{};const out=[];
+  if(m.name){out.push({k:'build',kind:'Sobre mi',es:'Me llamo '+m.name+'.',tok:['em','dic',m.name],extra:['sóc','tinc'],ans:'em dic '+m.name,tip:'Dir-se: em dic…',key:'me:name'});
+    out.push({k:'type',kind:'Sobre mi',p:'«Me llamo '+esc(m.name)+'»',ans:'em dic '+m.name,alts:['em dic '+m.name],e:'Em dic '+m.name+'.',h:'Empieza por «em»',key:'me:name2'})}
+  if(m.town){const d=isVow(m.town)?'d\''+m.town:'de '+m.town;const tk=isVow(m.town)?['sóc','d\''+m.town]:['sóc','de',m.town];
+    out.push({k:'build',kind:'Sobre mi',es:'Soy de '+m.town+'.',tok:tk,extra:['tinc','vinc'],ans:tk.join(' '),tip:'Ser + de + lloc (d\' davant vocal).',key:'me:town'});
+    out.push({k:'type',kind:'Sobre mi',p:'«Soy de '+esc(m.town)+'»',ans:'sóc '+d,alts:['sóc '+d],e:'Sóc '+d+'.',h:'Empieza por «sóc»',key:'me:town2'})}
+  if(m.age>0&&m.age<120){const n=catNum(+m.age);
+    out.push({k:'type',kind:'Sobre mi',p:'«Tengo '+m.age+' años»',ans:'tinc '+n+' anys',alts:['tinc '+n+' anys'],e:'Tinc '+n+' anys.',h:'Tenir + número + anys',key:'me:age'});
+    out.push({k:'build',kind:'Sobre mi',es:'Tengo '+m.age+' años.',tok:['tinc'].concat(n.split(' ')).concat(['anys']),extra:['sóc'],ans:'tinc '+n+' anys',tip:'La edad se dice con tenir.',key:'me:age2'})}
+  return shuf(out)}
+V.meform=()=>{const m=S.me||{};const f=(id,l,v,t)=>'<label class="muted">'+l+'</label><input id="'+id+'" type="'+(t||'text')+'" value="'+esc(v||'')+'" autocomplete="off" style="width:100%;padding:12px;margin:4px 0 12px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--ink);font:inherit">';
+  return'<h1>👤 Sobre mi</h1><p class="muted">Escribe tus datos para practicar frases con ellos. Se guardan solo en este navegador.</p>'+f('mn','Nom (nombre)',m.name)+f('mt','Poble o ciutat (pueblo o ciudad)',m.town)+f('ma','Edat (edad, opcional)',m.age,'number')+'<button class="btn block" data-a="mesave">Desa</button>'+(S.me?'<button class="btn sec block" style="margin-top:10px" data-a="medel">Esborra les meves dades</button>':'')};
+ACT.mesave=()=>{const n=($('#mn').value||'').trim().slice(0,30),t=($('#mt').value||'').trim().slice(0,30),a=parseInt($('#ma').value,10);
+  if(!n&&!t&&!(a>0)){toast('Escriu almenys una dada');return}
+  S.me={name:n,town:t,age:a>0&&a<120?a:0};save();toast('Desat ✓');up()};
+ACT.medel=()=>{S.me=null;save();toast('Dades esborrades');up()};
+ACT.meq=()=>{if(!S.me){go('meform',null,true);return}const q=meQs();if(!q.length){go('meform',null,true);return}startSession(q,{per:8})};
+ACT.meedit=()=>go('meform',null,true);
+/* Generador de frases por plantillas (solo con verbos y palabras ya estudiados) */
+const GFR=[
+ {need:'a12',ca:'tinc',es:'Tengo',art:'un'},{need:'a19',ca:'vull',es:'Quiero',art:'un'},{need:'a17',ca:'necessito',es:'Necesito',art:'un'},
+ {need:'a11',ca:'m\'agrada',es:'Me gusta',art:'def'},{need:'a11',ca:'on és',es:'¿Dónde está',art:'def',q:1}];
+const GTH=new Set(['casa','mobles','fruita','aliments','begudes','botigues','cos','roba','escola','lleure','transport','animals','familia','telefon','cuina','tecnologia','ciutat','natura']);
+const NP=w=>{if(!GTH.has(w.th))return null;const m=/^(el|la|l')\s?([^ ']+)$/i.exec(w.ca),e=/^(el|la) ([^(),]+)$/i.exec(w.es);return m&&e?{w,n:m[2],ca:m[1].toLowerCase(),ea:e[1].toLowerCase(),en:e[2]}:null};
+function genQ(){
+  const fr=GFR.filter(f=>dn(f.need));if(!fr.length)return null;
+  const nouns=seenPool().map(NP).filter(Boolean);if(nouns.length<3)return null;
+  const f=one(fr),x=one(nouns);
+  const un=x.ea==='el'?'un':'una';
+  const defTok=x.ca==="l'"?"l'"+x.n:null;
+  const tail=f.art==='un'?[un,x.n]:(defTok?[defTok]:[x.ca,x.n]);
+  const tok=f.ca.split(' ').concat(tail);const eArt=f.art==='un'?un:x.ea;
+  const es=f.q?'¿Dónde está '+x.ea+' '+x.en+'?':f.es+' '+eArt+' '+x.en+'.';
+  const pool=WORDS.map(NP).filter(Boolean);
+  const ex=pick(pool.filter(y=>y.n!==x.n).map(y=>y.n),2);
+  return{k:'build',kind:'Frase nova',es,tok,extra:ex,ans:tok.join(' '),tip:f.q?'On és + article + nom.':'Verb + article + nom.',key:'g:'+f.ca+'.'+x.w.ca}}
+ACT.genq=()=>{const qs=[];let t=0;while(qs.length<10&&t++<80){const q=genQ();if(q&&!qs.some(x=>x.ans===q.ans))qs.push(q)}
+  if(qs.length<3){toast('Acaba més lliçons per obrir aquest generador');return}startSession(qs,{per:8})};
+/* A2: traducciones difuminadas hasta tocarlas */
+ACT.unblur=(v,el)=>el.classList.add('on');
+ACT.blur=()=>{S.set.blur=S.set.blur===false;save();showCur()};
+const blr=l=>l.lv==='a2'&&S.set.blur!==false;
 /* ===== ARRANQUE ===== */
 document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t)return;const f=ACT[t.dataset.a];if(f){if(t.tagName!=='INPUT')e.preventDefault();f(t.dataset.v,t)}});
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>go(t.dataset.v)));

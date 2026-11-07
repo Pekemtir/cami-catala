@@ -16,7 +16,7 @@ function lq(lid,i){const l=LSM[lid];const q=l.qs[i];const o=Object.assign({},q,{
   if(q.k==='choice'){o.opts=q.opts.slice()}
   if(q.k==='build'){o.k='build';o.ans=q.tok.join(' ')}return o}
 function formOf(inf,tense,p){const v=VERBS[inf];const f=v&&v.T[tense]?v.T[tense][p]:null;return f}
-function verbQ(inf,tense,p){const v=VERBS[inf];const t=tense||TENSES[rnd(8)];const n=t==='imper'?5:6;
+function verbQ(inf,tense,p){const v=VERBS[inf];const t=tense||(()=>{const u=unlockedT();return u.length?u[rnd(u.length)]:'pres'})();const n=t==='imper'?5:6;
   let tries=0;while(tries++<20){const pp=(p==null||tries>1)?rnd(n):p;const f=formOf(inf,t,pp);if(!f||/undefined|null/.test(f))continue;
     const subj=t==='imper'?'('+IMPER_P[pp]+')':PRON_S[pp];const comp=VC[inf]||'';
     const pre=t==='subj'?'Vull que ':t==='cond'?'Si pogués, ':'';
@@ -28,7 +28,7 @@ function verbQ(inf,tense,p){const v=VERBS[inf];const t=tense||TENSES[rnd(8)];con
     return{k:'type',kind:'Conjugació · '+name,p:esc(sentence.trim()),ans:f,alts:[f],e:VT_NAMES[t][2]+'. '+inf+' → '+f,h:'Tiempo: '+name,key,verb:1}}
   return null}
 const VLIST=Object.keys(VERBS);
-function sentQ(lv){const p=SENT.filter(s=>!lv||s.lv===lv);const s=p[rnd(p.length)];const ex=s.x.length?s.x:pick(SENT.filter(z=>z!==s).flatMap(z=>z.t).filter(w=>!s.t.includes(w)),2);
+function sentQ(lv){const p=SENT.filter(s=>(!lv||s.lv===lv)&&(s.lv==='a1'||a2Any()));const s=p[rnd(p.length)];const ex=s.x.length?s.x:pick(SENT.filter(z=>z!==s).flatMap(z=>z.t).filter(w=>!s.t.includes(w)),2);
   return{k:'build',kind:'Construeix la frase',es:s.es,tok:s.t,extra:[...new Set(ex)].slice(0,2),ans:s.t.join(' '),tip:s.tip,key:'s:'+SENT.indexOf(s)}}
 function numQ(max){const n=rnd(max||100)+(rnd(3)?0:0);
   if(rnd(2))return{k:'type',kind:'Dictat de números',p:'Escolta i escriu el número (xifres)',say:catNum(n),ans:String(n),alts:[String(n)],e:n+' = '+catNum(n),hide:1};
@@ -46,7 +46,7 @@ function sentQ2(s){const ex=s.x.length?s.x:pick(SENT.filter(z=>z!==s).flatMap(z=
 function mixQ(n){const out=[];const doneL=Object.keys(S.done);const lids=doneL.length?doneL:LESSONS.filter(l=>l.lv==='a1').slice(0,6).map(l=>l.id);
   while(out.length<n){const r=rnd(10);let q=null;
     if(r<4){const l=LSM[lids[rnd(lids.length)]];q=lq(l.id,rnd(l.qs.length))}
-    else if(r<7)q=vq(WORDS[rnd(WORDS.length)]);
-    else if(r<9)q=verbQ(VLIST[rnd(VLIST.length)]);
+    else if(r<7){const sp=seenPool();q=vq(sp[rnd(sp.length)])}
+    else if(r<9){const vp=vpool();q=verbQ(vp[rnd(vp.length)])}
     else q=sentQ(rnd(2)?'a1':null);
     if(q)out.push(q)}return out}

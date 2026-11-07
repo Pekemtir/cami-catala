@@ -20,5 +20,6 @@ head.html
 18_tests_nivell.js
 19_autoavaluacio.js
 20_perfil_ajustes_legal.js
+20b_v6_extres.js
 21_arrencada.js
 tail.html

@@ -1,5 +1,12 @@
 # Changelog · Camí Català
 
+## v6 (2026-11-07)
+- **Sobre mi**: formulario (nombre, pueblo, edad) y frases de práctica con tus datos (em dic…, sóc de/d'…, tinc N anys, con el número en catalán). Se guarda solo en el navegador; editable y borrable desde Jo → Ajustos.
+- **Frases noves**: generador por plantillas (tinc / vull / necessito / m'agrada / on és + nombre) con solo verbos y palabras ya estudiados.
+- **Puerta de práctica**: la práctica mixta, el repte quotidià, «Escolta i tria» y el quiz de verbs solo usan palabras de temas, verbos y tiempos de lliçons acabades; los temas de Vocabulari se muestran con candado hasta entonces; el constructor de frases solo usa frases A2 cuando hay alguna lliçó A2 hecha. El código de acceso lo abre todo.
+- **A2 con menos castellano**: las traducciones de los ejemplos y de las paraules clau en lliçons A2 salen difuminadas hasta tocarlas (ajustable en Ajustos).
+- Prueba `tests/t-v6-nuevas.js`.
+
 ## v5 (2026-11-07)
 - Tema **Automàtic** ahora sigue de verdad al sistema (claro/oscuro) y reacciona si cambia con la app abierta.
 - Codi d'accés (hash, no legible en el HTML) en Perfil → Ajustos: abre todos los jocs sin acabar lliçons.
