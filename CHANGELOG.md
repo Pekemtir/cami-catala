@@ -1,17 +1,8 @@
 # Changelog · Camí Català
 
-## v6 (2026-11-07)
-- **Sobre mi**: formulario (nombre, pueblo, edad) y frases de práctica con tus datos (em dic…, sóc de/d'…, tinc N anys, con el número en catalán). Se guarda solo en el navegador; editable y borrable desde Jo → Ajustos.
-- **Frases noves**: generador por plantillas (tinc / vull / necessito / m'agrada / on és + nombre) con solo verbos y palabras ya estudiados.
-- **Puerta de práctica**: la práctica mixta, el repte quotidià, «Escolta i tria» y el quiz de verbs solo usan palabras de temas, verbos y tiempos de lliçons acabades; los temas de Vocabulari se muestran con candado hasta entonces; el constructor de frases solo usa frases A2 cuando hay alguna lliçó A2 hecha. El código de acceso lo abre todo.
-- **A2 con menos castellano**: las traducciones de los ejemplos y de las paraules clau en lliçons A2 salen difuminadas hasta tocarlas (ajustable en Ajustos).
-- Prueba `tests/t-v6-nuevas.js`.
-
 ## v5 (2026-11-07)
-- Tema **Automàtic** ahora sigue de verdad al sistema (claro/oscuro) y reacciona si cambia con la app abierta.
-- Codi d'accés (hash, no legible en el HTML) en Perfil → Ajustos: abre todos los jocs sin acabar lliçons.
-- Resum de la lliçó (objetivos y palabras clave) al terminar la práctica de cada lliçó.
-- Prueba nueva en `tests/`.
+- Audio de los números: «vint-i-cinc», «trenta-dos»… se pronuncian como se dicen (vinti cinc, trenta dos). La escritura no cambia: siguen con guiones.
+- Explicaciones en castellano: corregidas palabras en catalán que se habían colado (lliçó/lliçons, participis, infinitiu, gerundi, indicatiu…) y referencias a pestañas que no existen (Repàs → Paraules fluixes).
 
 ## v4 (2026-11-07)
 - Jocs con bloqueos por progreso, como en la versión euskera, para no adelantar materia: Contrarellotge de verbs y Pluja de verbs se abren al acabar la lliçó 7 (A1); Contrarellotge de paraules al tener vocabulario visto; cada tema de Parelles se abre al acabar la lliçó donde se trabaja.
