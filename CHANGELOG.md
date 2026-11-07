@@ -1,5 +1,10 @@
 # Changelog · Camí Català
 
+## v4 (2026-11-07)
+- Jocs con bloqueos por progreso, como en la versión euskera, para no adelantar materia: Contrarellotge de verbs y Pluja de verbs se abren al acabar la lliçó 7 (A1); Contrarellotge de paraules al tener vocabulario visto; cada tema de Parelles se abre al acabar la lliçó donde se trabaja.
+- Los tiempos verbales (presente → perfet → perifràstic → imperfet → futur → condicional → subjuntiu) y los verbos (regulares, pronominales, irregulares) solo salen cuando ya se han estudiado; los demás aparecen con candado.
+- Pluja de verbs: con un solo tiempo disponible, el objetivo es un verbo concreto (3 verbs per partida); desde el perfet, el objetivo es el tiempo verbal.
+
 ## v3 (2026-11-07)
 - Jocs rehechos al estilo de la versión euskera: Contrarellotge de verbs (elige el tiempo, +3 s cada 5 aciertos), Contrarellotge de paraules, Parelles por temas (contrarreloj con tableros continuos o sin tiempo, con puntuación) y Pluja de verbs (formas que caen, 3 vidas, el tiempo pedido cambia cada 6 aciertos).
 

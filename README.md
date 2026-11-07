@@ -9,7 +9,7 @@ Curso gratuito de **catalán A1 + A2** (interfaz y explicaciones en castellano) 
 - Más de 1.700 palabras en 54 temas, con tarjetas y cuestionarios, y un diccionario buscable de ~2.800 entradas.
 - 149 verbos con 8 tiempos generados por reglas (presente, perfet, perifràstic, imperfet, futur, condicional, subjuntiu, imperatiu) y práctica de conjugación.
 - Constructor de frases, dictado de números, deletreo, escucha y elige, repaso de palabras flojas y reto diario.
-- Juegos: Contrarellotge de verbs y de paraules, Parelles (por temas) y Pluja de verbs.
+- Juegos: Contrarellotge de verbs y de paraules, Parelles (por temas) y Pluja de verbs, con bloqueos por progreso para no adelantar materia.
 - Test de nivel A1 y A2 (90 % total y 75 % por bloque) y autoevaluación.
 - XP, rachas, insignias, copia de seguridad del progreso y tema oscuro/claro.
 
