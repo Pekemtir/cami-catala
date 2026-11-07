@@ -1,5 +1,8 @@
 # Changelog · Camí Català
 
+## v12 (2026-11-07)
+- **Ayuda 💡 progresiva**: cada toque da más pista en las preguntas de escribir. 1.º la ayuda de siempre; 2.º «Empieza por "a"» + nº de palabras y letras; 3.º máscara con la primera letra de cada palabra (a _ _ _ _); en las lliçons 1–8 de A1 hay un 4.º toque con la mitad de las letras. Aviso «Toca 💡 otra vez para ver más» mientras queden niveles.
+
 ## v11 (2026-11-07)
 - **Menos castellano progresivo en A2, como en euskera** (sin ocultar nada, todo se ve al tocar): A1 y A2 lliçons 1–7 con traducciones visibles; desde la lliçó 8 de A2 los ejemplos y las paraules clau salen borrosos; desde la 16 también el subtítulo en castellano de la lliçó (cabecera, lista e Inici) y, en Inici, la traducción de la paraula del dia. Se puede desactivar en Jo → Ajustos.
 

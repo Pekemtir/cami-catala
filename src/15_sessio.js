@@ -50,7 +50,14 @@ ACT.check=()=>{if(SE.locked)return;const q=SE.cur;
   const tb=$('#tb');if(!tb)return;const val=tb.value;if(!val.trim()){tb.focus();return}
   const r=checkType(q,val);tb.classList.add(r.ok?'good':'bad');tb.disabled=true;if(r.ok&&q.sayAns)say(q.ans);finishQ(r.ok,q,r.note,r.ok?'':val)};
 ACT.idk=()=>{if(SE.locked)return;const tb=$('#tb');if(tb)tb.disabled=true;finishQ(false,SE.cur)};
-ACT.hint=()=>{const q=SE.cur;$('#hn').textContent='💡 '+q.h};
+function hintMask(a,full){return a.split(' ').map(w=>{const L=[...w];if(L.length<=1)return w;const k=full?Math.max(1,Math.ceil(L.length/2)):1;return L.map((c,i)=>i<k||!/[\p{L}\d]/u.test(c)?c:'_').join('')}).join(' ')}
+ACT.hint=()=>{const q=SE.cur,a=String((q.alts&&q.alts[0])||q.ans||''),max=SE.o.early?4:3;
+  q.hl=Math.min((q.hl||0)+1,max);const L=q.hl,nw=a.split(' ').length,nl=[...a.replace(/[^\p{L}\d]/gu,'')].length;
+  let t='💡 '+q.h;
+  if(L>=2&&a){const f=[...a][0];t+='<br>🔤 Empieza por «'+esc(f)+'» · '+(nw>1?nw+' palabras, ':'')+nl+' letras.'}
+  if(L>=3&&a)t+='<br>✏️ <b style="letter-spacing:2px">'+esc(hintMask(a,false))+'</b>';
+  if(L>=4&&a)t+='<br>✏️ <b style="letter-spacing:2px">'+esc(hintMask(a,true))+'</b>';
+  $('#hn').innerHTML=t+(L<max?'<br><small>Toca 💡 otra vez para ver más.</small>':'')};
 ACT.wt=(v,el)=>{if(SE.locked)return;SE.line.push(+v);el.classList.add('gone');redrawLine()};
 function redrawLine(){const q=SE.cur,all=q.tok.concat(q.extra||[]);$('#ln').innerHTML=SE.line.map((i,n)=>'<button class="wt" data-a="wl" data-v="'+n+'">'+esc(all[i])+'</button>').join('');$('#ck').disabled=!SE.line.length}
 ACT.wl=(v)=>{if(SE.locked)return;const idx=SE.line.splice(+v,1)[0];const b=document.querySelector('#bk .wt[data-v="'+idx+'"]');if(b)b.classList.remove('gone');redrawLine()};

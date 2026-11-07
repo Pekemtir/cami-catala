@@ -46,7 +46,7 @@ const nextOf=id=>{const i=LESSONS.findIndex(l=>l.id===id);return LESSONS[i+1]};
 ACT.lesson=id=>{if(/^a2/.test(id)&&!a2Open()){toast('🔒 A2 bloquejat: acaba l\'A1, aprova el test d\'A1 o usa el codi');return}go('lesson',id,CUR.v!=='lesson');};
 ACT.lnext=()=>{LP.p++;showCur()};ACT.lprev=()=>{if(LP.p>0)LP.p--;showCur()};
 ACT.lpractice=()=>{const l=LSM[LP.id];const qs=shuf(l.qs.map((q,i)=>i)).map(i=>lq(l.id,i));
-  startSession(qs,{per:10,bonus:20,onDone:r=>{const sc=Math.round(r.acc*100);
+  startSession(qs,{per:10,bonus:20,early:l.lv==='a1'&&l.n<=8,onDone:r=>{const sc=Math.round(r.acc*100);
     if(r.acc>=.6){const o=S.done[l.id];S.done[l.id]={best:Math.max(o?o.best:0,sc),date:today()};if(sc===100)S.stat.perfect++;addXP(0);toast('Lliçó completada ✓')}else toast('Repassa la lliçó i torna-ho a provar');r.html=lessonRecap(l);save();checkBadges()}})};
 function lessonRecap(l){const g=(l.goals||[]).map(x=>'<li>'+esc(x)+'</li>').join('');const kw=(l.kw||[]).slice(0,8).map(k=>Array.isArray(k)?k.join(' = '):String(k)).map(esc);return '<div class="card" style="text-align:left;margin-top:14px"><b>📌 Resum de la lliçó</b>'+(g?'<ul>'+g+'</ul>':'')+(kw.length?'<p class="muted">'+kw.join(' · ')+'</p>':'')+'</div>'}
 ACT.lv=v=>{CUR.a=v;showCur()};
