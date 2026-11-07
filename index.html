@@ -103,6 +103,25 @@ details{margin:8px 0}summary{cursor:pointer;font-weight:800}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 body.in-session .top{display:none}
 .res{display:flex;justify-content:space-between;padding:4px 0}
+.jg-game{display:flex;gap:14px;align-items:center;text-align:left;width:100%;margin:10px 0;cursor:pointer;font:inherit;color:inherit}
+.jg-game .ic{font-size:34px}.jg-game b{font:400 23px var(--f-d);display:block}.jg-game small{display:block;color:var(--muted);font-size:14px;margin-top:2px}
+.jg-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.jg-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}.jg-title{font:400 24px var(--f-d);flex:1}.jg-chip{font-weight:800}
+.jg-hint{text-align:center;color:var(--muted);margin-top:14px}.jg-q{font:400 38px/1.2 var(--f-d);text-align:center;margin:10px 0}.jg-streak{text-align:center;min-height:24px;font-weight:800;color:var(--yel)}
+.jg-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.jg-opt{padding:16px 8px;font:400 24px var(--f-d);border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.3)}
+.jg-opt.ok{background:var(--grn-s);color:var(--ink);border-color:var(--grn)}.jg-opt.no{background:var(--red-s);border-color:var(--red)}
+.jg-g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.jg-mc{aspect-ratio:1/.78;border-radius:14px;border:2px solid var(--line);background:var(--surface2);color:var(--ink);font:400 19px var(--f-d);cursor:pointer;padding:4px;position:relative}
+.jg-mc .b{display:none;line-height:1.1;word-break:break-word}.jg-mc .b span{display:block;font-size:26px}
+.jg-mc.up .f,.jg-mc.done .f{display:none}.jg-mc.up .b,.jg-mc.done .b{display:block}.jg-mc .f{font-size:26px}
+.jg-mc.up{border-color:var(--yel);background:var(--surface)}.jg-mc.done{background:var(--grn-s);border-color:var(--grn);opacity:.9}
+.jg-target{text-align:center;padding:10px;border-radius:14px;border:2px solid var(--line);background:var(--surface);font-size:16px}.jg-target b{display:block;font:400 24px var(--f-d);color:var(--yel)}
+.jg-target.chg{animation:jgp .5s 3}@keyframes jgp{50%{transform:scale(1.06);background:var(--yel);color:var(--on-yel)}}
+.jg-arena{position:relative;height:min(52vh,420px);overflow:hidden;border:2px dashed var(--line);border-radius:16px;margin-top:10px;background:var(--bg2)}
+.jg-fall{position:absolute;top:0;left:0;padding:8px 12px;border-radius:12px;background:var(--surface);border:2px solid var(--ink);font:400 21px var(--f-d);cursor:pointer;white-space:nowrap;max-width:96%}
+.jg-fall.good{background:var(--grn-s);border-color:var(--grn)}.jg-fall.bad{background:var(--red-s);border-color:var(--red)}
+.jg-notice{position:absolute;left:8%;right:8%;top:38%;z-index:5;text-align:center;padding:14px;border-radius:14px;background:var(--ink);color:var(--bg);font-size:15px}.jg-notice b{display:block;font:400 24px var(--f-d)}.jg-notice.heal{background:var(--grn);color:#102}
 
 </style>
 </head>
@@ -3345,7 +3364,7 @@ function endSession(){const o=SE.o;const acc=SE.tot?SE.ok/SE.tot:0;let bonus=0;
 /* ===== NAVEGACIÓN Y PANTALLAS ===== */
 let CUR={v:'home',a:null},NAV=[],TIMERS=[];
 const TABS=['home','lessons','practice','dict','me'];
-function clearTimers(){TIMERS.forEach(t=>{clearInterval(t);clearTimeout(t)});TIMERS=[]}
+function clearTimers(){try{JG.stop()}catch(x){}TIMERS.forEach(t=>{clearInterval(t);clearTimeout(t)});TIMERS=[]}
 function go(v,a,sub){clearTimers();if(SE)SE=null;leaveSession();
   if(sub){NAV.push(CUR)}else if(TABS.includes(v)){NAV=[]}
   CUR={v,a};show()}
@@ -3397,7 +3416,7 @@ V.practice=()=>{const wk=Object.keys(S.weak).length;
   return'<h1>Pràctica</h1><p class="muted">Tria com vols entrenar.</p><div class="tiles">'+
   T('weak','🔁','Paraules fluixes',wk+' per repassar')+T('daily','📅','Repte quotidià','10 preguntes')+T('themes','🗂️','Vocabulari','54 temes')+T('sentq','🧩','Constructor de frases','Ordena paraules')+
   T('vquiz','🔧','Quiz de verbs','Conjugació')+T('numq','🔢','Números','Dictat i escriptura')+T('spellq','🔤','Lletrejar','Escolta les lletres')+T('listenq','🎧','Escolta i tria','Comprensió oral')+
-  T('games','🎮','Jocs','3 jocs')+T('tests','🧪','Test de nivell','A1 i A2')+T('self','✅','Autoavaluació','Què sé fer?')+'</div>'};
+  T('games','🎮','Jocs','4 jocs')+T('tests','🧪','Test de nivell','A1 i A2')+T('self','✅','Autoavaluació','Què sé fer?')+'</div>'};
 ACT.weak=()=>{const ks=shuf(Object.keys(S.weak)).slice(0,15);const qs=ks.map(keyToQ).filter(Boolean);
   if(!qs.length){toast('No tens res per repassar. Bona feina!');return}startSession(qs,{per:8,bonus:10})};
 ACT.daily=()=>{const first=!S.seen['dc'+today()];startSession(mixQ(10),{per:8,bonus:first?30:10,onDone:r=>{if(r.acc>=.6){S.seen['dc'+today()]=1;save()}}})};
@@ -3443,51 +3462,116 @@ V.vquiz=()=>'<h1>Quiz de verbs</h1><p class="muted">Completa la forma verbal cor
 ACT.vqs=v=>{VQ.sel=v;showCur()};
 ACT.vqgo=()=>{const qs=[];while(qs.length<12){const q=verbQ(VLIST[rnd(VLIST.length)],VQ.sel==='all'?null:VQ.sel);if(q)qs.push(q)}startSession(qs,{per:8})};
 
-/* ===== JUEGOS ===== */
-V.games=()=>'<h1>Jocs</h1><p class="muted">Aprendre jugant. Guanyes XP en acabar.</p><div class="tiles"><button class="tile" data-a="g_time"><span class="ic">⏱️</span><span class="t">Contrarellotge</span><span class="s">60 s · millor: '+(S.best.time||0)+'</span></button><button class="tile" data-a="g_mem"><span class="ic">🃏</span><span class="t">Parelles</span><span class="s">Memòria · millor: '+(S.best.mem?S.best.mem+' mov.':'—')+'</span></button><button class="tile" data-a="g_verb"><span class="ic">🏁</span><span class="t">Cursa de verbs</span><span class="s">10 rondes · millor: '+(S.best.race||0)+'</span></button></div>';
-let GL={lv:''};
-const lvPills=()=>'<div class="pills">'+[['','Tot'],['a1','A1'],['a2','A2']].map(x=>'<button class="pill '+(GL.lv===x[0]?'on':'')+'" data-a="glv" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</div>';
-ACT.glv=v=>{GL.lv=v;showCur()};
-V.g_time=()=>'<h1>⏱️ Contrarellotge</h1><p>Tens 60 segons. Tria el significat correcte de cada paraula. Cada encert suma 10 punts.</p>'+lvPills()+'<button class="btn block" data-a="gtgo">Comença</button>';
-V.g_mem=()=>'<h1>🃏 Parelles</h1><p>Troba les 6 parelles català–castellà amb el mínim de moviments.</p>'+lvPills()+'<button class="btn block" data-a="gmgo">Comença</button>';
-V.g_verb=()=>'<h1>🏁 Cursa de verbs</h1><p>10 rondes. Escriu la forma verbal abans que s\'acabi el temps: com més ràpid, més punts.</p><button class="btn block" data-a="grgo">Comença</button>';
-ACT.g_time=()=>go('g_time',null,true);ACT.g_mem=()=>go('g_mem',null,true);ACT.g_verb=()=>go('g_verb',null,true);
-function gEnd(title,body,xp){S.stat.games++;addXP(xp);$('#app').innerHTML='<div class="card" style="text-align:center;margin-top:20px"><div class="big">🎉</div><h1>'+title+'</h1>'+body+'<p class="muted">+'+xp+' XP</p></div><button class="btn block" data-a="done">Torna a jugar</button><button class="btn sec block" style="margin-top:10px" data-a="up">Surt</button>'}
-ACT.gtgo=()=>{clearTimers();const p=pool(GL.lv);const G={t:60,score:0,ok:0,tot:0,lock:false};const A=$('#app');
-  function q(){const w=p[rnd(p.length)];const ops=shuf([w.es].concat(distract(w,3,'es')));G.w=w;
-    $('#gq').innerHTML='<div class="prompt"><span class="big">'+w.em+'</span> '+esc(w.ca)+'</div><div class="opts">'+ops.map(o=>'<button class="opt" data-a="gtp" data-v="'+esc(o)+'">'+esc(o)+'</button>').join('')+'</div>';G.lock=false}
-  A.innerHTML='<div class="row"><b class="grow">⏱️ <span id="gt">60</span> s</b><b>Punts: <span id="gs">0</span></b></div><div class="timer"><i id="gb" style="width:100%"></i></div><div id="gq"></div>';q();
-  G.fn=v=>{if(G.lock)return;G.lock=true;G.tot++;const ok=v===G.w.es;document.querySelectorAll('#gq .opt').forEach(b=>{if(b.dataset.v===G.w.es)b.classList.add('good');else if(b.dataset.v===v)b.classList.add('bad')});
-    if(ok){G.ok++;G.score+=10;$('#gs').textContent=G.score}else{G.score=Math.max(0,G.score-3);$('#gs').textContent=G.score;S.weak['w:'+G.w.ca]=1}
-    TIMERS.push(setTimeout(()=>{if(G.t>0)q()},ok?250:700))};
-  GG=G;
-  TIMERS.push(setInterval(()=>{G.t-=.1;const t=Math.max(0,G.t);$('#gt').textContent=Math.ceil(t);$('#gb').style.width=(t/60*100)+'%';if(G.t<=0){clearTimers();const nb=G.score>(S.best.time||0);if(nb)S.best.time=G.score;gEnd('Temps!','<p style="font-size:24px">'+G.score+' punts</p><p>'+G.ok+' encerts de '+G.tot+(nb?' · 🏅 nou rècord!':'')+'</p>',Math.min(40,Math.round(G.score/6)+5))}},100))};
-let GG=null;ACT.gtp=v=>GG&&GG.fn(v);
-ACT.gmgo=()=>{clearTimers();const ws=[];for(const w of shuf(pool(GL.lv))){if(norm(w.ca)===norm(w.es)||ws.some(x=>norm(x.es)===norm(w.es)||norm(x.ca)===norm(w.ca)||norm(x.ca)===norm(w.es)||norm(x.es)===norm(w.ca)))continue;ws.push(w);if(ws.length===6)break}const cards=shuf(ws.flatMap((w,i)=>[{id:i,t:w.ca,s:'ca'},{id:i,t:w.es,s:'es'}]));
-  const M={up:[],moves:0,found:0,lock:false,cards};GM=M;
-  const draw=()=>{$('#gmb').innerHTML=cards.map((c,i)=>'<button class="gc'+(c.ok?' ok':M.up.includes(i)?' up':'')+'" data-a="gmc" data-v="'+i+'" aria-label="'+((c.ok||M.up.includes(i))?esc(c.t):'carta')+'">'+((c.ok||M.up.includes(i))?esc(c.t):'?')+'</button>').join('');$('#gmv').textContent=M.moves};
-  M.draw=draw;$('#app').innerHTML='<div class="row"><b class="grow">Moviments: <span id="gmv">0</span></b><span class="muted">'+ws.length+' parelles</span></div><div class="gm" id="gmb"></div>';draw()};
-let GM=null;
-ACT.gmc=v=>{const M=GM;if(!M||M.lock)return;v=+v;const c=M.cards[v];if(c.ok||M.up.includes(v))return;M.up.push(v);if(c.s==='ca')say(c.t);M.draw();
-  if(M.up.length===2){M.moves++;const[a,b]=M.up.map(i=>M.cards[i]);M.lock=true;
-    if(a.id===b.id){a.ok=b.ok=true;M.found++;M.up=[];M.lock=false;M.draw();
-      if(M.found===6){const nb=!S.best.mem||M.moves<S.best.mem;if(nb)S.best.mem=M.moves;TIMERS.push(setTimeout(()=>gEnd('Parelles fetes!','<p style="font-size:24px">'+M.moves+' moviments</p>'+(nb?'<p>🏅 nou rècord!</p>':''),Math.max(10,40-M.moves)),500))}}
-    else TIMERS.push(setTimeout(()=>{M.up=[];M.lock=false;M.draw()},800))}else M.draw()};
-ACT.grgo=()=>{clearTimers();const R={n:0,pts:0,ok:0,lock:false};GR=R;const A=$('#app');
-  function round(){if(R.n>=10){const nb=R.pts>(S.best.race||0);if(nb)S.best.race=R.pts;gEnd('Cursa acabada!','<p style="font-size:24px">'+R.pts+' punts</p><p>'+R.ok+' / 10 encerts'+(nb?' · 🏅 nou rècord!':'')+'</p>',Math.min(40,Math.round(R.pts/8)+5));return}
-    let q=null;while(!q){q=verbQ(VLIST[rnd(VLIST.length)],TENSES[rnd(7)])}
-    if(q.k==='choice'){q.k='type';q.alts=[q.ans]}
-    R.q=q;R.n++;R.left=20;R.lock=false;
-    A.innerHTML='<div class="row"><b class="grow">Ronda '+R.n+'/10</b><b>Punts: '+R.pts+'</b></div><div class="timer"><i id="rb" style="width:100%"></i></div><div class="qkind">'+esc(q.kind)+'</div><div class="prompt">'+q.p+'</div><input class="typebox" id="rt" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Resposta"><button class="btn block" style="margin-top:12px" data-a="rgo">Comprova</button><div id="rf" style="margin-top:12px"></div>';
-    const rt=$('#rt');rt.focus();rt.addEventListener('keydown',e=>{if(e.key==='Enter')ACT.rgo()})}
-  R.round=round;
-  R.tick=setInterval(()=>{if(R.lock)return;R.left-=.1;const b=$('#rb');if(b)b.style.width=Math.max(0,R.left/20*100)+'%';if(R.left<=0)ACT.rgo(true)},100);TIMERS.push(R.tick);round()};
-let GR=null;
-ACT.rgo=timeout=>{const R=GR;if(!R||R.lock||!R.q)return;const rt=$('#rt');if(!rt)return;R.lock=true;const q=R.q;
-  const r=timeout===true?{ok:false}:checkType(q,rt.value);rt.disabled=true;rt.classList.add(r.ok?'good':'bad');
-  if(r.ok){const p=10+Math.round(R.left);R.pts+=p;R.ok++;S.stat.verb++;S.stat.tot++;S.stat.ok++;if(S.weak[q.key])delete S.weak[q.key];$('#rf').innerHTML='<span class="ok">+'+p+' punts</span>'+(r.note?' <small>'+esc(r.note)+'</small>':'')}
-  else{S.stat.tot++;S.weak[q.key]=(S.weak[q.key]||0)+1;$('#rf').innerHTML='<span class="err">'+(timeout===true?'Temps! ':'')+'Correcte: <b>'+esc(q.ans)+'</b></span>'}
-  save();TIMERS.push(setTimeout(()=>R.round(),r.ok?900:1800))};
+/* ===== JUEGOS (estilo sala de juegos: Contrarellotge, Parelles, Pluja de verbs) ===== */
+const JG={t:null,r:null,live:false,stop(){if(this.t){clearInterval(this.t);this.t=null}if(this.r){cancelAnimationFrame(this.r);this.r=null}this.live=false}};
+const one=a=>a[rnd(a.length)];
+const stripA=s=>String(s).replace(/^(el|la|l'|els|les|un|una) ?/i,'');
+const GT=['pres','perf','perif','imp','fut','cond','subj'];
+function unlockedT(){const d=S.done,anyA2=Object.keys(d).some(k=>k[1]==='2');const u=['pres'];
+  if(d.a121||d.a122||anyA2)u.push('perf');if(d.a21||d.a22)u.push('perif');if(d.a23||d.a24)u.push('imp');if(d.a25)u.push('fut');if(d.a214)u.push('cond');if(d.a215)u.push('subj');return u}
+let GS={kt:null,at:null,kwl:'',ml:'a1'};
+function gbestSave(key,score,xp){S.stat.games++;const nb=score>0&&(S.best[key]==null||score>S.best[key]);if(nb)S.best[key]=score;addXP(xp);return nb}
+function jgResult(title,score,unit,key,xp,again,extra){JG.stop();const nb=gbestSave(key,score,xp);
+  $('#app').innerHTML='<div class="result" style="text-align:center;padding-top:24px"><div class="big">'+(nb?'🏆':'🎉')+'</div><h1>'+esc(title)+'</h1><div style="font:400 72px/1 var(--f-d);color:var(--yel)">'+score+'</div><p class="muted">'+unit+'</p><p style="color:var(--yel)">'+(nb?'Nou rècord!':'Millor: '+(S.best[key]||0))+' · +'+xp+' XP</p>'+(extra||'')+'<div style="margin-top:18px;display:grid;gap:10px"><button class="btn block" data-a="'+again+'">Una altra</button><button class="btn sec block" data-a="up">Jocs</button></div></div>';window.scrollTo(0,0)}
+const jgHead=(t,chip)=>'<div class="jg-top"><button class="btn sec sm" data-a="gback" aria-label="Enrere">←</button><span class="jg-title">'+t+'</span><span class="jg-chip" id="jchip">'+(chip||'')+'</span></div>';
+ACT.gback=()=>{JG.stop();showCur()};
+const gcard=(a,ic,n,d,best,v)=>'<button class="card jg-game" data-a="'+a+'"'+(v!=null?' data-v="'+v+'"':'')+'><span class="ic">'+ic+'</span><span><b>'+n+'</b><small>'+d+'</small>'+(best!=null?'<small>🏆 Millor: '+best+'</small>':'')+'</span></button>';
+V.games=()=>'<h1>Jocs</h1><p class="muted">Practica jugant. Guanyes XP en acabar cada partida.</p>'+
+  gcard('g_k','⏱️','Contrarellotge de verbs','60 segons: quantes conjugacions encertes?',S.best.k)+
+  gcard('g_kw','🔤','Contrarellotge de paraules','60 segons: tria el significat de cada paraula.',S.best.kw)+
+  gcard('g_mem','🃏','Parelles','Memòria per temes. Contrarellotge o sense temps.')+
+  gcard('g_ae','🪂','Pluja de verbs','Formes que cauen: toca només les del temps demanat.',S.best.ae);
+['g_k','g_kw','g_mem','g_ae'].forEach(n=>ACT[n]=()=>go(n,null,true));
+const tPills=(sel,a)=>'<div class="pills">'+GT.map(t=>'<button class="pill '+(sel.includes(t)?'on':'')+'" data-a="'+a+'" data-v="'+t+'">'+VT_NAMES[t][0]+'</button>').join('')+'</div>';
+/* ---- 1 · Contrarellotge de verbs ---- */
+V.g_k=()=>{if(!GS.kt)GS.kt=unlockedT();return'<h1>⏱️ Contrarellotge de verbs</h1><p>60 segons. Tria la forma correcta. Cada 5 encerts seguits guanyes +3 s.</p><b>Temps en joc</b>'+tPills(GS.kt,'gkt')+'<p class="muted">Per defecte surten els temps que ja has treballat a les lliçons.</p><button class="btn block" data-a="gkgo">Comença</button>'};
+ACT.gkt=v=>{GS.kt=GS.kt.includes(v)?(GS.kt.length>1?GS.kt.filter(x=>x!==v):GS.kt):GS.kt.concat(v);showCur()};
+function convQ(inf,t){const v=VERBS[inf];const n=t==='imper'?5:6;const p=rnd(n);const ans=v.T[t]&&v.T[t][p];if(!ans)return null;
+  const same=[...new Set(v.T[t].filter(f=>f&&f!==ans))];const rest=[...new Set(GT.flatMap(x=>v.T[x]||[]).filter(f=>f&&f!==ans&&!same.includes(f)))];
+  const opts=[...new Set(shuf(same).concat(shuf(rest)))].slice(0,3);if(opts.length<3)return null;
+  return{p:(t==='imper'?'('+IMPER_P[p]+')':PRON_S[p])+' ___',hint:inf+' · '+VT_NAMES[t][0]+' · '+(t==='imper'?IMPER_ES[p]:PRON_ES[p]),ans,opts:shuf([ans].concat(opts)),key:'v:'+inf+'.'+t+'.'+p}}
+ACT.gkgo=()=>{JG.stop();const ts=GS.kt||['pres'];let t=60,sc=0,ok=0,fail=0,st=0,bs=0,q=null,lock=false;const seen=new Set();
+  const nq=()=>{for(let n=0;n<80;n++){const x=convQ(one(VLIST),one(ts));if(x&&!seen.has(x.key)){seen.add(x.key);return x}}seen.clear();return convQ('parlar','pres')};
+  const draw=()=>{$('#jq').textContent=q.p;$('#jh').textContent=q.hint;$('#jst').textContent=st>=3?'🔥 '+st:'';
+    $('#jo').innerHTML=q.opts.map(o=>'<button class="jg-opt" data-o="'+esc(o)+'">'+esc(o)+'</button>').join('');
+    $('#jo').querySelectorAll('.jg-opt').forEach(b=>b.onclick=()=>{if(lock)return;lock=true;const good=b.dataset.o===q.ans;
+      if(good){ok++;st++;bs=Math.max(bs,st);sc+=10+Math.min(st,10)*2;b.classList.add('ok');if(st%5===0)t=Math.min(75,t+3);if(S.weak[q.key])delete S.weak[q.key];S.stat.verb++}
+      else{fail++;st=0;b.classList.add('no');[...$('#jo').children].forEach(x=>{if(x.dataset.o===q.ans)x.classList.add('ok')});S.weak[q.key]=(S.weak[q.key]||0)+1}
+      S.stat.tot++;if(good)S.stat.ok++;$('#jchip').textContent='⭐ '+sc;setTimeout(()=>{if(JG.live){q=nq();lock=false;draw()}},good?220:700)})};
+  $('#app').innerHTML=jgHead('Contrarellotge','⭐ 0')+'<div class="timer"><i id="jtb" style="width:100%"></i></div><div class="jg-hint" id="jh"></div><div class="jg-q" id="jq"></div><div class="jg-streak" id="jst"></div><div class="jg-opts" id="jo"></div><p class="muted" style="text-align:center;margin-top:12px">⏱ <b id="jtt">60</b> s</p>';
+  JG.live=true;q=nq();draw();
+  JG.t=setInterval(()=>{t--;const e=$('#jtt');if(!e){JG.stop();return}e.textContent=Math.max(t,0);$('#jtb').style.width=Math.max(0,t/60*100)+'%';
+    if(t<=0)jgResult('Contrarellotge',sc,ok+' encerts · '+fail+' errors · millor ratxa '+bs,'k',Math.min(40,Math.round(sc/8)+3),'gkgo')},1000)};
+/* ---- 2 · Contrarellotge de paraules ---- */
+V.g_kw=()=>'<h1>🔤 Contrarellotge de paraules</h1><p>60 segons. Tria el significat de cada paraula catalana.</p><div class="pills">'+[['','Tot'],['a1','A1'],['a2','A2']].map(x=>'<button class="pill '+(GS.kwl===x[0]?'on':'')+'" data-a="gkwl" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</div><button class="btn block" data-a="gkwgo">Comença</button>';
+ACT.gkwl=v=>{GS.kwl=v;showCur()};
+ACT.gkwgo=()=>{JG.stop();const p=pool(GS.kwl);let t=60,sc=0,ok=0,fail=0,st=0,bs=0,w=null,lock=false;
+  const nq=()=>{w=p[rnd(p.length)];lock=false;draw()};
+  const draw=()=>{const ops=shuf([w.es].concat(distract(w,3,'es')));$('#jh').textContent='Què vol dir?';$('#jq').innerHTML=(w.em?w.em+' ':'')+esc(w.ca);$('#jst').textContent=st>=3?'🔥 '+st:'';
+    $('#jo').innerHTML=ops.map(o=>'<button class="jg-opt" data-o="'+esc(o)+'">'+esc(o)+'</button>').join('');
+    $('#jo').querySelectorAll('.jg-opt').forEach(b=>b.onclick=()=>{if(lock)return;lock=true;const good=b.dataset.o===w.es;
+      if(good){ok++;st++;bs=Math.max(bs,st);sc+=10+Math.min(st,10)*2;b.classList.add('ok');if(st%5===0)t=Math.min(75,t+3);say(w.ca)}
+      else{fail++;st=0;b.classList.add('no');[...$('#jo').children].forEach(x=>{if(x.dataset.o===w.es)x.classList.add('ok')});S.weak['w:'+w.ca]=(S.weak['w:'+w.ca]||0)+1}
+      S.stat.tot++;if(good)S.stat.ok++;$('#jchip').textContent='⭐ '+sc;setTimeout(()=>{if(JG.live)nq()},good?220:700)})};
+  $('#app').innerHTML=jgHead('Paraules','⭐ 0')+'<div class="timer"><i id="jtb" style="width:100%"></i></div><div class="jg-hint" id="jh"></div><div class="jg-q" id="jq"></div><div class="jg-streak" id="jst"></div><div class="jg-opts" id="jo"></div><p class="muted" style="text-align:center;margin-top:12px">⏱ <b id="jtt">60</b> s</p>';
+  JG.live=true;nq();
+  JG.t=setInterval(()=>{t--;const e=$('#jtt');if(!e){JG.stop();return}e.textContent=Math.max(t,0);$('#jtb').style.width=Math.max(0,t/60*100)+'%';
+    if(t<=0)jgResult('Paraules',sc,ok+' encerts · '+fail+' errors · millor ratxa '+bs,'kw',Math.min(40,Math.round(sc/8)+3),'gkwgo')},1000)};
+/* ---- 3 · Parelles ---- */
+const memSets=lv=>VOCAB.filter(t=>t.lv===lv&&t.w.length>=6);
+V.g_mem=()=>{const lv=GS.ml;return'<h1>🃏 Parelles</h1><p class="muted">Tria un tema. Troba les parelles català–castellà.</p><div class="pills"><button class="pill '+(lv==='a1'?'on':'')+'" data-a="gml" data-v="a1">A1</button><button class="pill '+(lv==='a2'?'on':'')+'" data-a="gml" data-v="a2">A2</button></div>'+
+  '<button class="card jg-game" data-a="gmset" data-v="__all"><span class="ic">🌍</span><span><b>General</b><small>Paraules de tots els temes del nivell '+lv.toUpperCase()+'</small></span></button><div class="jg-grid2">'+memSets(lv).map(t=>'<button class="card jg-game" data-a="gmset" data-v="'+t.id+'" style="padding:10px 12px;margin:0"><span class="ic" style="font-size:26px">'+t.ic+'</span><span><b style="font-size:17px">'+esc(t.ca)+'</b><small>'+t.w.length+' paraules</small></span></button>').join('')+'</div>'};
+ACT.gml=v=>{GS.ml=v;showCur()};
+ACT.gmset=id=>{const w=id==='__all'?memSets(GS.ml).flatMap(t=>t.w):THM[id].w;GS.mem={id,ca:id==='__all'?'General '+GS.ml.toUpperCase():THM[id].ca,words:w.map(x=>({ca:x[0],es:x[1],em:x[2]||''}))};go('g_memmode',null,true)};
+V.g_memmode=()=>{const m=GS.mem,b=S.best;return'<h1>'+esc(m.ca)+'</h1><p class="muted">Tria com vols jugar.</p>'+gcard('gmt','⏱️','Contrarellotge','90 s: taulers de 6 parelles sense parar. Tauler complet: +20 punts i +5 s.',b['mem-'+m.id+'-t'])+gcard('gmr','🧘','Sense temps','Un tauler de 6 parelles, amb calma. Es compten els moviments.',b['mem-'+m.id+'-r'])};
+ACT.gmt=()=>gmPlay('t');ACT.gmr=()=>gmPlay('r');ACT.gmagain=()=>gmPlay(GS.mem.mode);
+function gmPlay(mode){JG.stop();const cfg=GS.mem;cfg.mode=mode;const timed=mode==='t',key='mem-'+cfg.id+'-'+mode;let t=90,pairs=0,boards=0,sc=0,moves=0,open=[],lock=false,cards=[],found=0;const t0=Date.now();
+  const upd=()=>{const c=$('#jchip');if(c)c.textContent=timed?'⭐ '+sc:moves+' mov.'};
+  const six=()=>{const out=[];for(const w of shuf(cfg.words)){if(norm(w.ca)===norm(w.es))continue;if(out.some(x=>norm(x.es)===norm(w.es)||norm(x.ca)===norm(w.ca)||norm(x.ca)===norm(w.es)||norm(x.es)===norm(w.ca)))continue;out.push(w);if(out.length===6)break}return out};
+  function board(){const sx=six();cards=[];sx.forEach((w,i)=>cards.push({id:i,ca:1,a:w.em,b:w.ca},{id:i,ca:0,a:'',b:stripA(w.es)}));cards=shuf(cards);open=[];found=0;lock=false;
+    $('#jg').innerHTML=cards.map((c,i)=>'<button class="jg-mc" data-i="'+i+'" aria-label="carta"><div><span class="f">❔</span><span class="b">'+(c.ca?'<span>'+c.a+'</span>'+esc(c.b):esc(c.b))+'</span></div></button>').join('');
+    $('#jg').querySelectorAll('.jg-mc').forEach(el=>el.onclick=()=>flip(el))}
+  function flip(el){const i=+el.dataset.i;if(lock||el.classList.contains('up'))return;el.classList.add('up');open.push(i);if(cards[i].ca)say(cards[i].b);
+    if(open.length===2){moves++;const a=cards[open[0]],b=cards[open[1]],els=open.map(k=>$('#jg').children[k]);
+      if(a.id===b.id&&a.ca!==b.ca){els.forEach(x=>x.classList.add('done'));open=[];found++;pairs++;sc+=10;upd();
+        if(found===6){if(timed){boards++;sc+=20;t=Math.min(120,t+5);upd();lock=true;setTimeout(()=>{if(JG.live)board()},650)}
+          else{const s=Math.max(0,Math.round(1000-moves*40-(Date.now()-t0)/1000*6));setTimeout(()=>{if(JG.live)jgResult(cfg.ca+' · Parelles',s,moves+' moviments · '+Math.round((Date.now()-t0)/1000)+' s',key,15,'gmagain')},700)}}}
+      else{lock=true;setTimeout(()=>{els.forEach(x=>x.classList.remove('up'));open=[];lock=false},timed?550:800)}if(!timed)upd()}}
+  $('#app').innerHTML=jgHead(esc(cfg.ca),timed?'⭐ 0':'0 mov.')+(timed?'<div class="timer"><i id="jtb" style="width:100%"></i></div><p class="muted" style="text-align:center">⏱ <b id="jtt">90</b> s · tauler complet: +20 i +5 s</p>':'<p class="muted" style="text-align:center">Uneix cada paraula catalana amb el seu significat.</p>')+'<div class="jg-g3" id="jg"></div>';
+  JG.live=true;board();
+  if(timed)JG.t=setInterval(()=>{t--;const e=$('#jtt');if(!e){JG.stop();return}e.textContent=Math.max(t,0);$('#jtb').style.width=Math.max(0,t/90*100)+'%';
+    if(t<=0)jgResult(cfg.ca+' · Parelles',sc,pairs+' parelles · '+boards+' taulers complets',key,Math.min(40,Math.round(sc/8)+3),'gmagain')},1000)}
+/* ---- 4 · Pluja de verbs ---- */
+V.g_ae=()=>{if(!GS.at){GS.at=unlockedT();if(GS.at.length<2)GS.at=['pres','perf']}return'<h1>🪂 Pluja de verbs</h1><p>Cauen formes verbals. Toca <b>només</b> les del temps que et demanen. El temps canvia cada 6 encerts. Tens 3 vides.</p><b>Temps en joc (mínim 2)</b>'+tPills(GS.at,'gat')+'<button class="btn block" data-a="gaego"'+(GS.at.length<2?' disabled':'')+'>Comença</button>'};
+ACT.gat=v=>{GS.at=GS.at.includes(v)?GS.at.filter(x=>x!==v):GS.at.concat(v);showCur()};
+const AEV=VLIST.filter(i=>!VERBS[i].pn&&i!=='caldre');
+function aeItem(ty,sel){for(let n=0;n<60;n++){const inf=one(AEV),v=VERBS[inf],p=rnd(6),f=v.T[ty]&&v.T[ty][p];if(!f)continue;
+    if(sel.some(o=>o!==ty&&v.T[o]&&v.T[o].includes(f)))continue;return{txt:PRON_S[p]+' '+f,ty}}return{txt:'jo parlo',ty:'pres'}}
+ACT.gaego=()=>{if(GS.at.length<2)return;JG.stop();const sel=GS.at.slice();let lives=3,sc=0,tgt=one(sel),items=[],last=0,spawn=0,sp=44,ok=0,pauseT=0;
+  $('#app').innerHTML=jgHead('Pluja de verbs','')+'<div class="jg-target">Toca només les formes de <b id="jtg"></b></div><div class="jg-arena" id="jar"></div><p class="muted" style="text-align:center;margin-top:10px">Temps en joc: '+sel.map(t=>VT_NAMES[t][0]).join(' · ')+'</p>';
+  const setT=()=>{$('#jtg').textContent=VT_NAMES[tgt][0]+' — '+VT_NAMES[tgt][2]};setT();
+  const hud=()=>{const c=$('#jchip');if(c)c.textContent='❤️'.repeat(lives)+'🖤'.repeat(3-lives)+' · '+sc};
+  const note=(html,cls,top)=>{const ar=$('#jar');if(!ar)return null;const n=document.createElement('div');n.className='jg-notice '+(cls||'');if(top)n.style.top=top;n.innerHTML=html;ar.appendChild(n);return n};
+  const lose=()=>{lives--;hud();if(lives<=0){JG.live=false;jgResult('Pluja de verbs',sc,ok+' encerts','ae',Math.min(40,ok*2+2),'gaego','<p class="muted">'+sel.map(t=>VT_NAMES[t][0]).join(' · ')+'</p>')}};
+  const announce=()=>{pauseT=1.6;items.forEach(o=>{o.dead=1;o.el.remove()});items=[];spawn=1.2;const lvl=Math.floor(ok/6)+1;
+    const n=note('<span>Canvi! · Nivell '+lvl+'</span><b>Ara: '+VT_NAMES[tgt][0]+'</b>');const tg=document.querySelector('.jg-target');if(tg)tg.classList.add('chg');try{navigator.vibrate&&navigator.vibrate(120)}catch(e){}
+    setTimeout(()=>{if(n)n.remove();if(tg)tg.classList.remove('chg')},1600)};
+  const add=()=>{const good=Math.random()<.45,ty=good?tgt:one(sel.filter(x=>x!==tgt)),it=aeItem(ty,sel),ar=$('#jar');if(!ar)return;
+    const el=document.createElement('div');el.className='jg-fall';el.textContent=it.txt;ar.appendChild(el);
+    const w=ar.clientWidth-el.offsetWidth-6,o={el,y:-50,ty:it.ty};el.style.left=Math.max(2,rnd(Math.max(w,2)))+'px';items.push(o);
+    el.onclick=()=>{if(o.dead)return;o.dead=1;
+      if(o.ty===tgt){sc+=10;ok++;S.stat.verb++;el.classList.add('good');sp=Math.min(100,44+Math.floor(ok/6)*2.5);
+        if(ok%20===0&&lives<3){lives++;const n=note('<span>20 encerts</span><b>+1 ❤️</b>','heal','25%');setTimeout(()=>n&&n.remove(),1100)}
+        hud();if(ok%6===0){tgt=one(sel.filter(x=>x!==tgt));setT();announce()}}
+      else{el.classList.add('bad');lose()}
+      setTimeout(()=>el.remove(),250);items=items.filter(x=>x!==o)}};
+  const loop=ts=>{if(!JG.live||!$('#jar'))return;if(!last)last=ts;const dt=Math.min(.1,(ts-last)/1000);last=ts;
+    if(pauseT>0){pauseT-=dt;JG.r=requestAnimationFrame(loop);return}
+    spawn-=dt;if(spawn<=0){add();spawn=Math.max(.9,1.6-Math.floor(ok/6)*.03)}
+    const H=$('#jar').clientHeight;items.slice().forEach(o=>{o.y+=sp*dt;o.el.style.transform='translateY('+o.y+'px)';if(o.y>H-34){o.dead=1;o.el.remove();items=items.filter(x=>x!==o);if(o.ty===tgt)lose()}});
+    JG.r=requestAnimationFrame(loop)};
+  JG.live=true;hud();JG.r=requestAnimationFrame(loop)};
+
 /* ===== TESTS DE NIVEL ===== */
 const TB={a1:{n:'A1',blocks:[['Bases i presentacions',1,6],['Present i verbs',7,12],['Preguntar i vida quotidiana',13,19],['Passat i serveis',20,26]]},
 a2:{n:'A2',blocks:[['Passats',1,6],['Pronoms i futur',7,12],['Comparar, condicional i subjuntiu',13,18],['Opinions, connectors i vida real',19,24]]}};

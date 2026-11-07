@@ -1,5 +1,8 @@
 # Changelog · Camí Català
 
+## v3 (2026-11-07)
+- Jocs rehechos al estilo de la versión euskera: Contrarellotge de verbs (elige el tiempo, +3 s cada 5 aciertos), Contrarellotge de paraules, Parelles por temas (contrarreloj con tableros continuos o sin tiempo, con puntuación) y Pluja de verbs (formas que caen, 3 vidas, el tiempo pedido cambia cada 6 aciertos).
+
 ## v2 (2026-11-07)
 - Lliçó 1: totes les lletres de l'alfabet (nom i paraula d'exemple) i les paraules d'exemple de vocals i consonants es poden escoltar amb 🔊.
 
