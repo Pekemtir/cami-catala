@@ -4,7 +4,7 @@
    Antimemorización: subconjunto al azar, las menos vistas/falladas primero, orden barajado sin repetir tipo seguido,
    una frase solo una vez por intento, y memoria de lo ya generado para no repetirlo hasta agotar el banco. */
 const LANGW='catalán';
-const MIXN=12,MIXF=6;
+const MIXN=17,MIXF=7;
 const clnTxt=s=>String(s||'').replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim();
 const wordsOf=t=>t.replace(/[.,;:!?¿¡«»"…]/g,'').split(/\s+/).filter(Boolean);
 const sameLen=(a,b)=>Math.abs(wordsOf(a).length-wordsOf(b).length);
