@@ -1,5 +1,8 @@
 # Changelog · Camí Català
 
+## v17 (2026-11-08)
+- **Aprobado de lección al 80 %** (antes 85 % en la versión anterior, 60 % al principio). La migración pasa a borrar solo las aprobadas con menos de 80 %. Quien ya abrió la versión anterior (marca `mig85`) ya perdió las de 80-84 %: no se recuperan solas, hay que repetirlas o restaurar una copia de seguridad.
+
 ## v16 (2026-11-08)
 - **Migración al 85 %:** al abrir la app (una sola vez, marca `mig85`), las lecciones ya aprobadas con menos de 85 % vuelven a pendientes y hay que repetirlas. Si eso deja el A2 sin cumplir sus condiciones, se vuelve a bloquear. Probado en node con progreso simulado; NO en navegador real.
 
