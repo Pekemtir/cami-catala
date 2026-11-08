@@ -24,5 +24,6 @@ head.html
 20_perfil_ajustes_legal.js
 20b_v6_extres.js
 20c_silencio.js
+20d_srs.js
 21_arrencada.js
 tail.html

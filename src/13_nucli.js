@@ -78,7 +78,7 @@ const WORDS=Object.values(WM);
 const THM={};VOCAB.forEach(t=>THM[t.id]=t);
 /* ----- dominio por palabra (0-4): cuanto menos se domina, más sale ----- */
 const mast=k=>S.m[k]||0;
-const bump=(k,ok)=>{S.m[k]=Math.max(0,Math.min(4,mast(k)+(ok?1:-1)))};
+const bump=(k,ok)=>{S.m[k]=Math.max(0,Math.min(4,mast(k)+(ok?1:-1)));try{srsMark(k,ok)}catch(e){}};
 const setPct=t=>{const ws=Object.keys(t.w.reduce((a,w)=>(a[w[0]]=1,a),{}));return Math.round(ws.reduce((a,k)=>a+mast(k),0)/(ws.length*4)*100)};
 const themeWords=t=>{const seen={};return t.w.filter(w=>!seen[w[0]]&&(seen[w[0]]=1)).map(w=>WM[w[0]]).filter(Boolean)};
 /* elige n palabras sin repetir ni la palabra ni el significado, favoreciendo las menos dominadas */

@@ -24,6 +24,7 @@ V.home=()=>{const nl=nextLesson();const w=wotd();const wk=Object.keys(S.weak).le
   if(nl)h+='<button class="lrow" data-a="lesson" data-v="'+nl.id+'" style="border-color:var(--yel)"><span class="ic">'+nl.ic+'</span><span class="grow"><small>Continua · '+nl.lv.toUpperCase()+' lliçó '+nl.n+'</small><b>'+esc(nl.ca)+'</b><small>'+esSub(nl,0)+'</small></span><span>▶</span></button>';
   else h+='<div class="card">🎉 Has completat tot el curs. Segueix repassant!</div>';
   h+='<div class="card"><div class="row"><div class="grow"><small class="muted">Paraula del dia</small><div style="font:400 28px var(--f-d);color:var(--yel)">'+w.em+' '+esc(w.ca)+'</div><div class="muted'+(nl&&nl.lv==='a2'&&nl.n>=8&&S.set.blur!==false?' blur" data-a="unblur" role="button':'')+'">'+esc(w.es)+'</div></div>'+spk(w.ca)+'</div></div>';
+  h+=srsCard();
   h+='<div class="tiles"><button class="tile" data-a="daily"><span class="ic">📅</span><span class="t">Repte quotidià</span><span class="s">'+(S.seen['dc'+today()]?'Fet avui ✓':'10 preguntes · +30 XP')+'</span></button><button class="tile" data-a="weak"><span class="ic">🔁</span><span class="t">Paraules fluixes</span><span class="s">'+wk+' per repassar</span></button></div>';
   h+='<h2>El teu progrés</h2><div class="card"><div class="row"><b class="grow">A1</b><span class="muted">'+doneCount('a1')+' / 26</span></div><div class="bar"><i style="width:'+pct(doneCount('a1'),26)+'%"></i></div><div class="row" style="margin-top:12px"><b class="grow">A2</b><span class="muted">'+doneCount('a2')+' / 24</span></div><div class="bar"><i style="width:'+pct(doneCount('a2'),24)+'%"></i></div></div>';
   const nb=Object.keys(S.badges).length;h+='<div class="muted">Insígnies: '+nb+' / '+BADGES.length+'</div>';return h};
@@ -57,7 +58,7 @@ ACT.tab=v=>go(v);
 V.practice=()=>{const wk=Object.keys(S.weak).length;
   const T=(a,ic,t,s)=>'<button class="tile" data-a="'+a+'"><span class="ic">'+ic+'</span><span class="t">'+t+'</span><span class="s">'+s+'</span></button>';
   return'<h1>Pràctica</h1><p class="muted">Tria com vols entrenar.</p><div class="tiles">'+
-  T('weak','🔁','Paraules fluixes',wk+' per repassar')+T('daily','📅','Repte quotidià','10 preguntes')+T('themes','🗂️','Vocabulari','54 temes')+T('sentq','🧩','Constructor de frases','Ordena paraules')+
+  T('weak','🔁','Paraules fluixes',wk+' per repassar')+T('srs','🧠','Repàs espaiat',srsDue().length+' per avui')+T('daily','📅','Repte quotidià','10 preguntes')+T('themes','🗂️','Vocabulari','54 temes')+T('sentq','🧩','Constructor de frases','Ordena paraules')+
   T('vquiz','🔧','Quiz de verbs','Conjugació')+T('numq','🔢','Números','Dictat i escriptura')+T('spellq','🔤','Lletrejar','Escolta les lletres')+T('listenq','🎧','Escolta i tria','Comprensió oral')+
   T('genq','✨','Frases noves','Generador de frases')+T('meq','👤','Sobre mi',S.me?'Frases amb les teves dades':'Explica\'ns de tu')+T('games','🎮','Jocs','4 jocs')+T('tests','🧪','Test de nivell','A1 i A2')+T('self','✅','Autoavaluació','Què sé fer?')+'</div>'};
 ACT.weak=()=>{const ks=shuf(Object.keys(S.weak)).slice(0,15);const qs=ks.map(keyToQ).filter(Boolean);
