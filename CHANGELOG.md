@@ -1,5 +1,9 @@
 # Changelog · Camí Català
 
+## v15 (2026-11-08)
+- **Aprobado de lección al 85 %** (antes 60 %): por debajo, la lección no cuenta como hecha y hay que repetir. El reto diario (60 %), los juegos por dominio (60 %) y el test de nivel (90 %) no cambian.
+- **+5 preguntas por práctica de lección:** `MIXN` 12 → 17 y `MIXF` 6 → 7 en `src/16b_leccion_mix.js` (7 fijas + 10 generadas con lo que enseña esa lección). Medido en node con DOM simulado: 50 lecciones × 30 intentos = 17 preguntas siempre, sin duplicados ni nulos. NO probado en navegador real.
+
 ## v13 (2026-11-08)
 - **Práctica de lección variada** (`src/16b_leccion_mix.js`, `buildLessonQs(l)`): cada intento = 6 preguntas fijas (las 13 escritas a mano, rotadas: primero las menos vistas y las falladas, con ruido al azar) + 6 generadas SOLO con lo que enseña esa lección (frases de ejemplo `ex` y palabras clave `kw`) ⇒ nada se pregunta antes de enseñarse. Generadas: traducir frase (4 opciones), escuchar y elegir significado, completar frase (primera letra + hueco), construir frase, vocabulario en ambos sentidos y escribir la palabra. Distractores: primero de la propia lección, luego de las anteriores.
 - **Antimemorización / imprevisible:** subconjunto distinto cada vez, orden barajado sin dos tipos iguales seguidos, una frase o palabra solo una vez por intento, máx. 2 de cada tipo generado, memoria por lección en `S.lh` (últimas 40 generadas y último intento de cada fija) para no repetir hasta agotar el banco, opciones barajadas al mostrarse.
