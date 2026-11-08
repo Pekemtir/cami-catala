@@ -1,5 +1,8 @@
 # Changelog · Camí Català
 
+## v16 (2026-11-08)
+- **Migración al 85 %:** al abrir la app (una sola vez, marca `mig85`), las lecciones ya aprobadas con menos de 85 % vuelven a pendientes y hay que repetirlas. Si eso deja el A2 sin cumplir sus condiciones, se vuelve a bloquear. Probado en node con progreso simulado; NO en navegador real.
+
 ## v15 (2026-11-08)
 - **Aprobado de lección al 85 %** (antes 60 %): por debajo, la lección no cuenta como hecha y hay que repetir. El reto diario (60 %), los juegos por dominio (60 %) y el test de nivel (90 %) no cambian.
 - **+5 preguntas por práctica de lección:** `MIXN` 12 → 17 y `MIXF` 6 → 7 en `src/16b_leccion_mix.js` (7 fijas + 10 generadas con lo que enseña esa lección). Medido en node con DOM simulado: 50 lecciones × 30 intentos = 17 preguntas siempre, sin duplicados ni nulos. NO probado en navegador real.

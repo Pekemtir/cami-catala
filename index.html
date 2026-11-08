@@ -3213,7 +3213,9 @@ const DEF={v:1,xp:0,streak:0,last:'',day:{d:'',xp:0},goal:30,done:{},weak:{},m:{
 let S;
 function load(){try{const r=localStorage.getItem(KEY);S=r?Object.assign({},DEF,JSON.parse(r)):JSON.parse(JSON.stringify(DEF))}catch(e){S=JSON.parse(JSON.stringify(DEF))}
   ['done','weak','m','badges','tests','self','best','seen'].forEach(k=>{if(!S[k]||typeof S[k]!=='object')S[k]={}});
-  S.stat=Object.assign({ok:0,tot:0,verb:0,games:0,perfect:0},S.stat);S.set=Object.assign({voice:true,theme:'auto',rate:.9,voiceName:''},S.set);S.day=S.day||{d:'',xp:0}}
+  S.stat=Object.assign({ok:0,tot:0,verb:0,games:0,perfect:0},S.stat);S.set=Object.assign({voice:true,theme:'auto',rate:.9,voiceName:''},S.set);S.day=S.day||{d:'',xp:0};
+  /* v16: aprobado al 85 % -> las lecciones aprobadas con menos de 85 % vuelven a pendientes (una sola vez) */
+  if(!S.mig85){S.mig85=1;Object.keys(S.done).forEach(k=>{const d=S.done[k];if(d&&(d.best||0)<85)delete S.done[k]})}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 load();
 function applyTheme(){let t=S.set.theme;const r=document.documentElement;if(t==='auto'){try{t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){t='dark'}}r.setAttribute('data-theme',t)}
